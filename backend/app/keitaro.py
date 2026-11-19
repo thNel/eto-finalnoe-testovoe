@@ -48,15 +48,30 @@ class StreamOffer(BaseModel):
 
 class Stream(BaseModel):
     id: int
+    name: str = ""
     campaign_id: int
     type: str
     state: str
     position: int
+    weight: float | None = None
     schema_type: str = Field(validation_alias="schema")
-    action_type: str
+    action_type: str | None = None
     action_payload: str | dict | None = None
+    action_options: dict | list | None = None
+    collect_clicks: bool | None = None
+    filter_or: bool | None = None
     filters: list[StreamFilter] = Field(default_factory=list)
+    landings: list[dict] = Field(default_factory=list)
     offers: list[StreamOffer] = Field(default_factory=list)
+
+
+class ClickRow(BaseModel):
+    stream_id: int | None
+    clicks: int
+
+
+class ClickReport(BaseModel):
+    rows: list[ClickRow]
 
 
 T = TypeVar("T")
@@ -135,6 +150,21 @@ class KeitaroClient:
 
     async def list_streams(self, campaign_id: int) -> list[Stream]:
         return await self._request("GET", f"campaigns/{campaign_id}/streams", list[Stream])
+
+    async def get_stream(self, stream_id: int) -> Stream:
+        return await self._request("GET", f"streams/{stream_id}", Stream)
+
+    async def update_stream_offers(self, stream_id: int, offers: list[dict]) -> Stream:
+        return await self._request("PUT", f"streams/{stream_id}", Stream, payload={"offers": offers})
+
+    async def stream_clicks_today(self, campaign_id: int) -> dict[int, int]:
+        report = await self._request("POST", "report/build", ClickReport, payload={
+            "range": {"interval": "today"},
+            "dimensions": ["stream_id"],
+            "measures": ["clicks"],
+            "filters": [{"name": "campaign_id", "operator": "EQUALS", "expression": campaign_id}],
+        })
+        return {row.stream_id: row.clicks for row in report.rows if row.stream_id is not None}
 
     async def enable_campaign(self, campaign_id: int) -> Campaign:
         return await self._request("POST", f"campaigns/{campaign_id}/enable", Campaign)

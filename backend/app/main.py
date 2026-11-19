@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.campaign_routes import router as campaign_router
 from app.config import settings
 from app.db import engine
+from app.editor_routes import router as editor_router
 from app.keitaro import KeitaroClient, KeitaroError
 
 
@@ -49,4 +50,5 @@ def health() -> dict[str, Literal["ok"]]:
 
 
 router.include_router(campaign_router)
+router.include_router(editor_router)
 app.include_router(router)

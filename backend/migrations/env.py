@@ -1,6 +1,7 @@
 from alembic import context
 
 from app.db import Base, engine
+from app.editor_store import EditorState  # Register the editor table in the migration metadata.
 
 
 if context.is_offline_mode():
