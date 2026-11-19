@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     database_url: str = DEFAULT_DATABASE_URL
     keitaro_base_url: HttpUrl = HttpUrl("https://tlgk.host")
     keitaro_api_key: SecretStr = SecretStr("")
+    keitaro_domain: str = ""
+    keitaro_campaign_group: str = "FORTESTS"
+    keitaro_traffic_source: str = "FORTESTS"
 
 
 settings = Settings()

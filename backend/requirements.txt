@@ -1,5 +1,7 @@
 alembic>=1.17,<2
 fastapi>=0.121,<1
+httpx>=0.28,<1
 pydantic-settings>=2.11,<3
+pycountry>=24.6,<27
 SQLAlchemy>=2.0,<2.1
 uvicorn[standard]>=0.38,<1
