@@ -1,0 +1,5 @@
+alembic>=1.17,<2
+fastapi>=0.121,<1
+pydantic-settings>=2.11,<3
+SQLAlchemy>=2.0,<2.1
+uvicorn[standard]>=0.38,<1
