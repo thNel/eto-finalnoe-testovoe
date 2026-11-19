@@ -2,7 +2,7 @@
 
 Веб-приложение для создания кампаний и редактирования офферов в их потоках.
 
-[Описание проекта](docs/description.md)
+[Описание](docs/description.md) · [Архитектура](docs/architecture.md) · [API](docs/api.md) · [Эксплуатация](docs/operations.md) · [Проверка](docs/verification.md)
 
 ## Локальный запуск
 
@@ -16,6 +16,11 @@
 cd backend
 py -m venv .venv
 if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Укажите `KEITARO_API_KEY` в `backend/.env`. Адрес Keitaro, домен, группа и источник описаны в [настройках окружения](docs/operations.md#окружение-бэкенда).
+
+```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
@@ -23,9 +28,7 @@ if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 
 На Linux и macOS используйте `python3` для создания окружения, `cp -n .env.example .env` для копирования и `.venv/bin/python` для остальных команд.
 
-FastAPI доступен на `http://127.0.0.1:8000`, Swagger — по пути `/docs`. SQLite создаётся в `backend/data/`. После обновления проекта примените миграции командой `alembic upgrade head` из виртуального окружения в каталоге `backend/`.
-
-Для подключения к Keitaro укажите `KEITARO_BASE_URL` и `KEITARO_API_KEY` в `backend/.env`. По умолчанию создаваемые кампании используют группу и источник `FORTESTS`. Если у ключа доступно несколько активных доменов, укажите нужное имя хоста в `KEITARO_DOMAIN`. Названия группы и источника можно задать через `KEITARO_CAMPAIGN_GROUP` и `KEITARO_TRAFFIC_SOURCE`.
+Swagger FastAPI доступен на [127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 ### Фронтенд
 
@@ -37,8 +40,4 @@ npm ci
 npm run dev
 ```
 
-Откройте `http://127.0.0.1:5173`. Vite проксирует `/api` в FastAPI. Чтобы проверить создание, нажмите «Новая кампания», введите название и GEO, выберите оффер из результатов поиска и отправьте форму. После активации появятся ссылка кампании и ссылка на её настройки в Keitaro.
-
-Чтобы проверить редактор, откройте «Редактировать» в списке кампаний. Изменения офферов автоматически сохраняются в черновик. При перезагрузке страницы черновик остаётся доступен. «Опубликовать» применяет изменения в Keitaro, а «Отменить изменения» закрывает черновик.
-
-Открытый редактор получает уведомления об изменениях в Keitaro по WebSocket. Vite проксирует их вместе с REST API. FastAPI проверяет каждую открытую кампанию раз в 15 секунд, пока на неё подписано хотя бы одно окно.
+Откройте [127.0.0.1:5173](http://127.0.0.1:5173/). Если PowerShell блокирует `npm.ps1`, используйте `npm.cmd`. Сценарии создания и редактирования описаны в [проверке проекта](docs/verification.md).
