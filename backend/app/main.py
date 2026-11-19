@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.campaign_events import CampaignEvents, router as events_router
 from app.campaign_routes import router as campaign_router
 from app.config import settings
 from app.db import engine
@@ -22,8 +23,14 @@ async def lifespan(app: FastAPI):
         timeout=httpx.Timeout(15, connect=5),
         headers={"Accept": "application/json", "User-Agent": "KeitaroCampaignManager/0.1"},
     ) as http:
-        app.state.keitaro = KeitaroClient(http, settings.keitaro_api_key.get_secret_value())
-        yield
+        client = KeitaroClient(http, settings.keitaro_api_key.get_secret_value())
+        events = CampaignEvents(client)
+        app.state.keitaro = client
+        app.state.campaign_events = events
+        try:
+            yield
+        finally:
+            await events.close()
 
 
 app = FastAPI(title="Keitaro Campaign Manager", lifespan=lifespan)
@@ -51,4 +58,5 @@ def health() -> dict[str, Literal["ok"]]:
 
 router.include_router(campaign_router)
 router.include_router(editor_router)
+router.include_router(events_router)
 app.include_router(router)
