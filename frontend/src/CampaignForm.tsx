@@ -1,8 +1,8 @@
-import { Alert, Anchor, Button, Group, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
-import { type FormEvent, useEffect, useState } from 'react';
+import { Alert, Anchor, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { type FormEvent, useState } from 'react';
 
-import { ApiError, type ApiErrorDetail, type CreatedCampaign, type Offer, createCampaign, searchOffers } from './api';
+import { ApiError, type ApiErrorDetail, type CreatedCampaign, type Offer, createCampaign } from './api';
+import { OfferSelect } from './OfferSelect';
 
 interface CampaignFormProps {
   onClose: () => void;
@@ -18,44 +18,12 @@ const stepNames: Record<string, string> = {
   enable: 'Включение кампании',
 };
 
-function offerOption(offer: Offer) {
-  return { value: String(offer.id), label: `${offer.name} · #${offer.id}` };
-}
-
 export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
   const [name, setName] = useState('');
   const [geo, setGeo] = useState('');
-  const [search, setSearch] = useState('');
-  const searchTerm = search.trim().slice(0, 200);
-  const [query] = useDebouncedValue(searchTerm, 250);
-  const [offers, setOffers] = useState<Offer[]>([]);
   const [selected, setSelected] = useState<Offer | null>(null);
-  const [offersLoading, setOffersLoading] = useState(true);
-  const [offersError, setOffersError] = useState(false);
-  const [offersRequest, setOffersRequest] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<ApiErrorDetail | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setOffersLoading(true);
-    setOffersError(false);
-    searchOffers(query, controller.signal)
-      .then((result) => { if (!controller.signal.aborted) setOffers(result); })
-      .catch(() => {
-        if (!controller.signal.aborted) {
-          setOffers([]);
-          setOffersError(true);
-        }
-      })
-      .finally(() => { if (!controller.signal.aborted) setOffersLoading(false); });
-    return () => controller.abort();
-  }, [query, offersRequest]);
-
-  const visibleOffers = selected && !offers.some((offer) => offer.id === selected.id)
-    ? [...offers, selected]
-    : offers;
-  const searching = offersLoading || query !== searchTerm;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -110,28 +78,7 @@ export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
             required
             disabled={submitting}
           />
-          <Select
-            label="Оффер"
-            placeholder="Поиск по названию или ID"
-            searchable
-            clearable
-            withAsterisk
-            disabled={submitting}
-            data={visibleOffers.map(offerOption)}
-            value={selected ? String(selected.id) : null}
-            onSearchChange={setSearch}
-            onChange={(value) => setSelected(visibleOffers.find((offer) => String(offer.id) === value) ?? null)}
-            nothingFoundMessage={searching ? 'Загрузка…' : 'Офферы не найдены'}
-            rightSection={searching && !selected ? <Loader size="xs" /> : undefined}
-          />
-          {offersError && (
-            <Group gap="xs">
-              <Text size="sm" c="red">Не удалось загрузить офферы.</Text>
-              <Button type="button" size="compact-xs" variant="subtle" onClick={() => setOffersRequest((value) => value + 1)}>
-                Повторить
-              </Button>
-            </Group>
-          )}
+          <OfferSelect value={selected} onChange={setSelected} disabled={submitting} />
           {error && (
             <Alert color="red" title={error.step ? stepNames[error.step] : 'Не удалось создать кампанию'} role="alert">
               {error.message}

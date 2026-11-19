@@ -61,6 +61,7 @@ export function CampaignsPage() {
         {created && (
           <Alert color="teal" title={`Кампания «${created.name}» создана`} role="status">
             <Group gap="md">
+              <Anchor href={`/campaigns/${created.id}`}>Открыть редактор</Anchor>
               <Anchor href={created.tracking_url} target="_blank" rel="noopener noreferrer">Ссылка кампании</Anchor>
               <Anchor href={created.admin_url} target="_blank" rel="noopener noreferrer">Открыть в Keitaro</Anchor>
             </Group>
@@ -103,9 +104,12 @@ export function CampaignsPage() {
                             </Badge>
                           </Table.Td>
                           <Table.Td>
-                            <Anchor href={campaign.admin_url} size="sm" target="_blank" rel="noopener noreferrer">
-                              Открыть в Keitaro
-                            </Anchor>
+                            <Group gap="xs">
+                              <Anchor href={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
+                              <Anchor href={campaign.admin_url} size="sm" target="_blank" rel="noopener noreferrer">
+                                Открыть в Keitaro
+                              </Anchor>
+                            </Group>
                           </Table.Td>
                         </Table.Tr>
                       ))}
