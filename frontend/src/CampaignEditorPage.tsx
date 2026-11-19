@@ -11,6 +11,12 @@ import {
   readEditor,
 } from './api';
 import { StreamEditor } from './StreamEditor';
+import { useCampaignEvents } from './useCampaignEvents';
+
+interface RefreshRequest {
+  revision: string | null;
+  force: boolean;
+}
 
 export function CampaignEditorPage({ id }: { id: number }) {
   const [editor, setEditor] = useState<CampaignEditor | null>(null);
@@ -19,7 +25,11 @@ export function CampaignEditorPage({ id }: { id: number }) {
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [dismissedRevision, setDismissedRevision] = useState<string | null>(null);
+  const [refreshRequest, setRefreshRequest] = useState<RefreshRequest | null>(null);
   const busyRef = useRef(false);
+  const operationGeneration = useRef(0);
+  const currentRevision = editor?.remote_revision;
+  const initialReadFinished = editor !== null || error !== null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -31,9 +41,60 @@ export function CampaignEditorPage({ id }: { id: number }) {
     return () => controller.abort();
   }, [id]);
 
+  useCampaignEvents(
+    id,
+    (revision, reconnected) => setRefreshRequest((pending) => ({
+      revision,
+      force: reconnected || (pending?.force ?? false),
+    })),
+  );
+
+  useEffect(() => {
+    if (!refreshRequest || !initialReadFinished || busy) return;
+    const request = refreshRequest;
+    const acknowledge = () => setRefreshRequest((pending) => pending === request ? null : pending);
+    if (!request.force && request.revision === currentRevision) {
+      acknowledge();
+      return;
+    }
+
+    const controller = new AbortController();
+    const generation = operationGeneration.current;
+    const interrupted = () => controller.signal.aborted || busyRef.current || operationGeneration.current !== generation;
+    let retryTimer: number | undefined;
+    let retryDelay = 1000;
+
+    async function refresh() {
+      try {
+        const latest = await readEditor(id, controller.signal);
+        if (interrupted()) return;
+        setEditor(latest);
+        if (currentRevision === undefined) setError(null);
+        acknowledge();
+      } catch (failure) {
+        if (interrupted()) return;
+        if (failure instanceof ApiError && failure.detail.code === 'campaign_missing') {
+          setEditor(null);
+          setError(failure.message);
+          acknowledge();
+          return;
+        }
+        retryTimer = window.setTimeout(refresh, retryDelay);
+        retryDelay = Math.min(retryDelay * 2, 15_000);
+      }
+    }
+
+    void refresh();
+    return () => {
+      controller.abort();
+      window.clearTimeout(retryTimer);
+    };
+  }, [busy, currentRevision, id, initialReadFinished, refreshRequest]);
+
   async function run(request: () => Promise<CampaignEditor>, success?: string) {
     if (busyRef.current) return false;
     busyRef.current = true;
+    operationGeneration.current += 1;
     setBusy(true);
     setError(null);
     setNotice(null);
