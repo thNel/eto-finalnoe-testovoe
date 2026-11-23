@@ -1,5 +1,5 @@
 import type { CampaignInput, CampaignPage, CreatedCampaign } from './campaigns.dto';
-import { request } from './http';
+import { request } from '../http/http';
 
 export function listCampaigns(offset: number, limit: number, signal: AbortSignal) {
   return request<CampaignPage>(`/campaigns?offset=${offset}&limit=${limit}`, { signal });

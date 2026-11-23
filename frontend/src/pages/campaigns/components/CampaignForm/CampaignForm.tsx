@@ -1,11 +1,11 @@
 import { Alert, Anchor, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { type FormEvent, useState } from 'react';
 
-import { createCampaign } from '../../../shared/api/campaigns';
-import { ApiError } from '../../../shared/api/http';
-import type { ApiErrorDetail } from '../../../shared/api/http.dto';
-import type { Offer } from '../../../shared/api/offers.dto';
-import { OfferSelect } from '../../../shared/components/OfferSelect';
+import { createCampaign } from '../../../../shared/api/campaigns/campaigns';
+import { ApiError } from '../../../../shared/api/http/http';
+import type { ApiErrorDetail } from '../../../../shared/api/http/http.dto';
+import type { Offer } from '../../../../shared/api/offers/offers.dto';
+import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
 import styles from './CampaignForm.module.css';
 import type { CampaignFormProps } from './CampaignForm.types';
 

@@ -6,14 +6,14 @@ import {
   editDraft,
   publishDraft,
   readEditor,
-} from '../../shared/api/campaign-editor';
-import type { CampaignEditor, OfferEdit } from '../../shared/api/campaign-editor.dto';
-import { ApiError } from '../../shared/api/http';
+} from '../../shared/api/campaign-editor/campaign-editor';
+import type { CampaignEditor, OfferEdit } from '../../shared/api/campaign-editor/campaign-editor.dto';
+import { ApiError } from '../../shared/api/http/http';
 import { useCampaignEvents } from '../../shared/hooks/useCampaignEvents';
 import layoutStyles from '../../shared/styles/PageLayout.module.css';
 import styles from './CampaignEditorPage.module.css';
 import type { CampaignEditorPageProps, RefreshRequest } from './CampaignEditorPage.types';
-import { StreamEditor } from './components/StreamEditor';
+import { StreamEditor } from './components/StreamEditor/StreamEditor';
 
 export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   const [editor, setEditor] = useState<CampaignEditor | null>(null);

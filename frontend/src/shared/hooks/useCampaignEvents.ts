@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent } from 'react';
 
-import type { CampaignRevisionEvent } from '../api/campaign-events.dto';
+import type { CampaignRevisionEvent } from '../api/campaign-editor/campaign-events.dto';
 
 export function useCampaignEvents(
   campaignId: number,

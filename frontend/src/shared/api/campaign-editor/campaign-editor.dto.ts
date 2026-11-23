@@ -1,5 +1,5 @@
-import type { Campaign } from './campaigns.dto';
-import type { Offer } from './offers.dto';
+import type { Campaign } from '../campaigns/campaigns.dto';
+import type { Offer } from '../offers/offers.dto';
 
 export interface EditorOffer extends Offer {
   published_share: number | null;

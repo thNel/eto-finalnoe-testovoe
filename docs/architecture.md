@@ -32,10 +32,10 @@ flowchart LR
 | `frontend/src/shared/api/` | HTTP-клиент, типы и запросы к API кампаний, офферов и редактора |
 | `frontend/src/pages/campaigns/` | Список кампаний и форма создания в `components/` |
 | `frontend/src/pages/campaign-editor/` | Страница редактора и компонент потока в `components/` |
-| `frontend/src/shared/components/OfferSelect.tsx` | Общий поиск офферов для формы и редактора |
+| `frontend/src/shared/components/OfferSelect/` | Общий поиск офферов для формы и редактора |
 | `frontend/src/shared/hooks/useCampaignEvents.ts` | Подключение WebSocket и переподключение |
 
-Во фронтенде каждому компоненту соответствует свой `.tsx`-файл. Пропсы и локальные типы находятся в соседних `*.types.ts`, контракты REST и WebSocket — в `shared/api/*.dto.ts`. Стили компонентов и страниц лежат в `*.module.css`. Несколько обязательных классов объединяются через `cn(styles.root, styles.compact)`, а классы, зависящие от состояния, вычисляются перед `return` через объект с ключами из CSS-модуля.
+У каждого компонента своя папка с `.tsx`, `*.types.ts` и `*.module.css`. Страницы хранят свои файлы в папках страниц, а компоненты конкретной страницы лежат в её `components/`. Модули HTTP и API сгруппированы по назначению в `shared/api/`, а их контракты REST и WebSocket находятся рядом в `*.dto.ts`. Несколько обязательных классов объединяются через `cn(styles.root, styles.compact)`, а классы, зависящие от состояния, вычисляются перед `return` через объект с ключами из CSS-модуля.
 
 ## Запросы к Keitaro
 

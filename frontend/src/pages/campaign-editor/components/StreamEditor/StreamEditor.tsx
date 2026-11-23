@@ -1,12 +1,12 @@
 import { Badge, Box, Button, Group, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
-import type { OfferEdit } from '../../../shared/api/campaign-editor.dto';
-import type { Offer } from '../../../shared/api/offers.dto';
-import { OfferSelect } from '../../../shared/components/OfferSelect';
+import type { OfferEdit } from '../../../../shared/api/campaign-editor/campaign-editor.dto';
+import type { Offer } from '../../../../shared/api/offers/offers.dto';
+import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
 import styles from './StreamEditor.module.css';
 import type { StreamEditorProps } from './StreamEditor.types';
-import { StreamOfferRow } from './StreamOfferRow';
+import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
 
 export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   const [adding, setAdding] = useState(false);

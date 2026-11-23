@@ -1,5 +1,5 @@
 import type { CampaignEditor, EditDraftRequest, OfferEdit, PublishDraftRequest } from './campaign-editor.dto';
-import { request } from './http';
+import { request } from '../http/http';
 
 export function readEditor(id: number, signal?: AbortSignal) {
   return request<CampaignEditor>(`/campaigns/${id}`, { signal });

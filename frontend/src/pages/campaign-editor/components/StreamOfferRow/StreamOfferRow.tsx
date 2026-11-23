@@ -1,7 +1,7 @@
 import { Button, Group, Table, Text } from '@mantine/core';
 import cn from "classnames";
 
-import { ShareInput } from './ShareInput';
+import { ShareInput } from '../ShareInput/ShareInput';
 import styles from './StreamOfferRow.module.css';
 import type { StreamOfferRowProps } from './StreamOfferRow.types';
 

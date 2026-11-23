@@ -1,4 +1,4 @@
-import type { CampaignPage } from '../../shared/api/campaigns.dto';
+import type { CampaignPage } from '../../shared/api/campaigns/campaigns.dto';
 
 export type ListState =
   | { status: 'loading' }

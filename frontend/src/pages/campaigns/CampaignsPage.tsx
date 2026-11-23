@@ -1,12 +1,12 @@
 import { Alert, Anchor, Badge, Button, Container, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-import { listCampaigns } from '../../shared/api/campaigns';
-import type { CreatedCampaign } from '../../shared/api/campaigns.dto';
+import { listCampaigns } from '../../shared/api/campaigns/campaigns';
+import type { CreatedCampaign } from '../../shared/api/campaigns/campaigns.dto';
 import layoutStyles from '../../shared/styles/PageLayout.module.css';
 import styles from './CampaignsPage.module.css';
 import type { ListState } from './CampaignsPage.types';
-import { CampaignForm } from './components/CampaignForm';
+import { CampaignForm } from './components/CampaignForm/CampaignForm';
 
 const PAGE_SIZE = 25;
 
