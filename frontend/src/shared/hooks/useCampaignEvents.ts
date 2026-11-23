@@ -1,5 +1,7 @@
 import { useEffect, useEffectEvent } from 'react';
 
+import type { CampaignRevisionEvent } from '../api/campaign-events.dto';
+
 export function useCampaignEvents(
   campaignId: number,
   onRevision: (revision: string | null, reconnected: boolean) => void,
@@ -27,7 +29,7 @@ export function useCampaignEvents(
       socket.onmessage = ({ data }) => {
         if (disposed || typeof data !== 'string') return;
         try {
-          const event = JSON.parse(data);
+          const event: Partial<CampaignRevisionEvent> | null = JSON.parse(data);
           if (
             event?.type === 'campaign_revision' && event.campaign_id === campaignId
             && (typeof event.remote_revision === 'string' || event.remote_revision === null)

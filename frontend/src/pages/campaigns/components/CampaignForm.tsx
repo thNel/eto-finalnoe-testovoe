@@ -1,15 +1,13 @@
 import { Alert, Anchor, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { type FormEvent, useState } from 'react';
 
-import { type CreatedCampaign, createCampaign } from '../../../shared/api/campaigns';
-import { ApiError, type ApiErrorDetail } from '../../../shared/api/http';
-import { type Offer } from '../../../shared/api/offers';
+import { createCampaign } from '../../../shared/api/campaigns';
+import { ApiError } from '../../../shared/api/http';
+import type { ApiErrorDetail } from '../../../shared/api/http.dto';
+import type { Offer } from '../../../shared/api/offers.dto';
 import { OfferSelect } from '../../../shared/components/OfferSelect';
-
-interface CampaignFormProps {
-  onClose: () => void;
-  onCreated: (campaign: CreatedCampaign) => void;
-}
+import styles from './CampaignForm.module.css';
+import type { CampaignFormProps } from './CampaignForm.types';
 
 const stepNames: Record<string, string> = {
   validate: 'Проверка настроек',
@@ -60,7 +58,7 @@ export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
       centered
     >
       <form onSubmit={submit}>
-        <Stack gap="md">
+        <Stack>
           <TextInput
             label="Название"
             placeholder="Название кампании"
@@ -85,7 +83,7 @@ export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
             <Alert color="red" title={error.step ? stepNames[error.step] : 'Не удалось создать кампанию'} role="alert">
               {error.message}
               {error.campaign_id && (
-                <Text size="sm" mt={4}>
+                <Text size="sm" className={styles.errorDetail}>
                   <Anchor href={error.admin_url} target="_blank" rel="noopener noreferrer">
                     Кампания №{error.campaign_id}
                   </Anchor>
@@ -94,11 +92,11 @@ export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
                 </Text>
               )}
               {!error.campaign_id && error.alias && (
-                <Text size="sm" mt={4}>Проверьте в Keitaro, появилась ли кампания с идентификатором {error.alias}.</Text>
+                <Text size="sm" className={styles.errorDetail}>Проверьте в Keitaro, появилась ли кампания с идентификатором {error.alias}.</Text>
               )}
             </Alert>
           )}
-          <Group justify="flex-end">
+          <Group className={styles.actions}>
             <Button type="button" variant="default" disabled={submitting} onClick={onClose}>Отмена</Button>
             <Button type="submit" loading={submitting} disabled={!selected}>Создать кампанию</Button>
           </Group>

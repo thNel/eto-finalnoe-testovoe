@@ -1,0 +1,20 @@
+.name {
+  font-weight: 600;
+}
+
+.caption {
+  font-size: var(--mantine-font-size-xs);
+  line-height: var(--mantine-line-height-xs);
+}
+
+.muted {
+  color: var(--mantine-color-dimmed);
+}
+
+.warning {
+  color: var(--mantine-color-orange-8);
+}
+
+.actions {
+  gap: calc(0.25rem * var(--mantine-scale));
+}

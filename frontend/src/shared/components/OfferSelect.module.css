@@ -1,0 +1,11 @@
+.root {
+  gap: calc(0.25rem * var(--mantine-scale));
+}
+
+.errorRow {
+  gap: var(--mantine-spacing-xs);
+}
+
+.errorMessage {
+  color: var(--mantine-color-red-filled);
+}

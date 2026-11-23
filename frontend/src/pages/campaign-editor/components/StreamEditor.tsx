@@ -1,45 +1,12 @@
-import { Badge, Box, Button, Group, NumberInput, Paper, Stack, Table, Text, Title } from '@mantine/core';
+import { Badge, Box, Button, Group, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
-import { type EditorOffer, type EditorStream, type OfferEdit } from '../../../shared/api/campaign-editor';
-import { type Offer } from '../../../shared/api/offers';
+import type { OfferEdit } from '../../../shared/api/campaign-editor.dto';
+import type { Offer } from '../../../shared/api/offers.dto';
 import { OfferSelect } from '../../../shared/components/OfferSelect';
-
-interface StreamEditorProps {
-  stream: EditorStream;
-  busy: boolean;
-  onEdit: (edit: OfferEdit) => Promise<boolean>;
-}
-
-function ShareInput({
-  offer, disabled, onSave,
-}: {
-  offer: EditorOffer;
-  disabled: boolean;
-  onSave: (share: number) => void;
-}) {
-  const [value, setValue] = useState<string | number>(offer.share);
-
-  return (
-    <NumberInput
-      aria-label={`Доля оффера ${offer.name}`}
-      value={value}
-      onChange={setValue}
-      onBlur={() => {
-        setValue(offer.share);
-        if (typeof value === 'number' && value !== offer.share) onSave(value);
-      }}
-      onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur(); }}
-      disabled={disabled}
-      min={0}
-      max={100}
-      allowDecimal={false}
-      hideControls
-      size="xs"
-      w={65}
-    />
-  );
-}
+import styles from './StreamEditor.module.css';
+import type { StreamEditorProps } from './StreamEditor.types';
+import { StreamOfferRow } from './StreamOfferRow';
 
 export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   const [adding, setAdding] = useState(false);
@@ -57,16 +24,16 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   }
 
   return (
-    <Paper withBorder radius="md" p="md">
-      <Stack gap="md">
-        <Group justify="space-between" align="flex-start">
-          <Stack gap={4}>
-            <Group gap="xs">
+    <Paper withBorder radius="md" className={styles.root}>
+      <Stack>
+        <Group className={styles.header}>
+          <Stack className={styles.heading}>
+            <Group className={styles.title}>
               <Title order={2} size="h4">{stream.name}</Title>
               {stream.edited && <Badge variant="light" color="yellow">Изменён</Badge>}
               {stream.state === 'disabled' && <Badge variant="light" color="gray">Отключён</Badge>}
             </Group>
-            <Text size="sm" c="dimmed">Клики сегодня: {stream.clicks_today ?? 'нет данных'}</Text>
+            <Text size="sm" className={styles.muted}>Клики сегодня: {stream.clicks_today ?? 'нет данных'}</Text>
           </Stack>
           {stream.editable && !adding && (
             <Button variant="light" size="compact-sm" disabled={busy} onClick={() => setAdding(true)}>
@@ -75,8 +42,8 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
           )}
         </Group>
         {adding && (
-          <Group align="end">
-            <Box flex={1} miw={200}>
+          <Group className={styles.addOffer}>
+            <Box className={styles.offerSelect}>
               <OfferSelect
                 value={selected}
                 onChange={setSelected}
@@ -96,7 +63,7 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
           </Group>
         )}
         {stream.offers.length === 0 ? (
-          <Text size="sm" c="dimmed">В потоке нет офферов.</Text>
+          <Text size="sm" className={styles.muted}>В потоке нет офферов.</Text>
         ) : (
           <Table.ScrollContainer minWidth={600}>
             <Table verticalSpacing="sm">
@@ -110,68 +77,13 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
               </Table.Thead>
               <Table.Tbody>
                 {stream.offers.map((offer) => (
-                  <Table.Tr key={offer.id}>
-                    <Table.Td>
-                      <Text size="sm" fw={600}>{offer.name}</Text>
-                      <Text size="xs" c="dimmed">#{offer.id}</Text>
-                      {offer.external_removal && (
-                        <Text size="xs" c="orange.8">Добавлен в Keitaro, будет удалён при публикации</Text>
-                      )}
-                      {offer.state === 'removed' && !offer.external_removal && (
-                        <Text size="xs" c="dimmed">Удалён из потока</Text>
-                      )}
-                      {offer.state === 'disabled' && <Text size="xs" c="dimmed">Отключён</Text>}
-                    </Table.Td>
-                    <Table.Td>{offer.published_share === null ? '—' : `${offer.published_share}%`}</Table.Td>
-                    <Table.Td>
-                      {stream.editable && offer.state === 'active' ? (
-                        <ShareInput
-                          key={offer.share}
-                          offer={offer}
-                          disabled={busy}
-                          onSave={(share) => void edit(offer.id, 'pin', share)}
-                        />
-                      ) : `${offer.share}%`}
-                    </Table.Td>
-                    <Table.Td>
-                      {stream.editable && (
-                        <Group gap={4}>
-                          {offer.state === 'removed' ? (
-                            <Button
-                              variant="subtle"
-                              size="compact-sm"
-                              disabled={busy}
-                              onClick={() => void edit(offer.id, 'restore')}
-                            >
-                              {offer.external_removal ? 'Оставить в черновике' : 'Вернуть'}
-                            </Button>
-                          ) : (
-                            <>
-                              {offer.state === 'active' && (
-                                <Button
-                                  variant={offer.pinned ? 'light' : 'subtle'}
-                                  size="compact-sm"
-                                  disabled={busy}
-                                  onClick={() => void edit(offer.id, offer.pinned ? 'unpin' : 'pin')}
-                                >
-                                  {offer.pinned ? 'Открепить' : 'Закрепить'}
-                                </Button>
-                              )}
-                              <Button
-                                variant="subtle"
-                                color="red"
-                                size="compact-sm"
-                                disabled={busy}
-                                onClick={() => void edit(offer.id, 'remove')}
-                              >
-                                Удалить
-                              </Button>
-                            </>
-                          )}
-                        </Group>
-                      )}
-                    </Table.Td>
-                  </Table.Tr>
+                  <StreamOfferRow
+                    key={offer.id}
+                    offer={offer}
+                    editable={stream.editable}
+                    busy={busy}
+                    onEdit={edit}
+                  />
                 ))}
               </Table.Tbody>
             </Table>

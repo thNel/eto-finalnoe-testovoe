@@ -1,0 +1,29 @@
+.root {
+  padding: var(--mantine-spacing-md);
+}
+
+.header {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.heading {
+  gap: calc(0.25rem * var(--mantine-scale));
+}
+
+.title {
+  gap: var(--mantine-spacing-xs);
+}
+
+.addOffer {
+  align-items: end;
+}
+
+.offerSelect {
+  flex: 1;
+  min-width: calc(12.5rem * var(--mantine-scale));
+}
+
+.muted {
+  color: var(--mantine-color-dimmed);
+}

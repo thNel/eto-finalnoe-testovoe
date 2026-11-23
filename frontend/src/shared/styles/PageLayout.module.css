@@ -1,0 +1,13 @@
+.root {
+  padding-block: var(--mantine-spacing-lg);
+}
+
+.content {
+  gap: var(--mantine-spacing-lg);
+}
+
+@media (min-width: 48em) {
+  .root {
+    padding-block: calc(3rem * var(--mantine-scale));
+  }
+}

@@ -1,7 +1,11 @@
 import { Alert, Anchor, Badge, Button, Container, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-import { type CampaignPage, type CreatedCampaign, listCampaigns } from '../../shared/api/campaigns';
+import { listCampaigns } from '../../shared/api/campaigns';
+import type { CreatedCampaign } from '../../shared/api/campaigns.dto';
+import layoutStyles from '../../shared/styles/PageLayout.module.css';
+import styles from './CampaignsPage.module.css';
+import type { ListState } from './CampaignsPage.types';
 import { CampaignForm } from './components/CampaignForm';
 
 const PAGE_SIZE = 25;
@@ -11,11 +15,6 @@ const states: Record<string, { label: string; color: string }> = {
   disabled: { label: 'Отключена', color: 'gray' },
   deleted: { label: 'В архиве', color: 'gray' },
 };
-
-type ListState =
-  | { status: 'loading' }
-  | { status: 'ready'; data: CampaignPage }
-  | { status: 'error'; message: string };
 
 export function CampaignsPage() {
   const [list, setList] = useState<ListState>({ status: 'loading' });
@@ -52,15 +51,15 @@ export function CampaignsPage() {
   }
 
   return (
-    <Container component="main" size="lg" py={{ base: 'lg', sm: 48 }}>
-      <Stack gap="lg">
-        <Group justify="space-between" align="center">
+    <Container component="main" size="lg" className={layoutStyles.root}>
+      <Stack className={layoutStyles.content}>
+        <Group className={styles.header}>
           <Title order={1}>Кампании Keitaro</Title>
           <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
         </Group>
         {created && (
           <Alert color="teal" title={`Кампания «${created.name}» создана`} role="status">
-            <Group gap="md">
+            <Group>
               <Anchor href={`/campaigns/${created.id}`}>Открыть редактор</Anchor>
               <Anchor href={created.tracking_url} target="_blank" rel="noopener noreferrer">Ссылка кампании</Anchor>
               <Anchor href={created.admin_url} target="_blank" rel="noopener noreferrer">Открыть в Keitaro</Anchor>
@@ -68,11 +67,11 @@ export function CampaignsPage() {
           </Alert>
         )}
         {list.status === 'loading' && (
-          <Group role="status"><Loader size="sm" /><Text c="dimmed">Загрузка кампаний…</Text></Group>
+          <Group role="status"><Loader size="sm" /><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
         )}
         {list.status === 'error' && (
           <Alert color="red" title="Не удалось загрузить кампании" role="alert">
-            <Group gap="sm">
+            <Group className={styles.errorActions}>
               <Text size="sm">{list.message}</Text>
               <Button size="compact-sm" variant="default" onClick={() => loadPage(page)}>Повторить</Button>
             </Group>
@@ -81,7 +80,9 @@ export function CampaignsPage() {
         {list.status === 'ready' && (
           <>
             {list.data.items.length === 0 ? (
-              <Paper withBorder p="lg" radius="md"><Text c="dimmed">Кампаний на этой странице пока нет.</Text></Paper>
+              <Paper withBorder radius="md" className={styles.emptyState}>
+                <Text className={styles.muted}>Кампаний на этой странице пока нет.</Text>
+              </Paper>
             ) : (
               <Paper withBorder radius="md">
                 <Table.ScrollContainer minWidth={440}>
@@ -95,8 +96,8 @@ export function CampaignsPage() {
                       {list.data.items.map((campaign) => (
                         <Table.Tr key={campaign.id}>
                           <Table.Td>
-                            <Text size="sm" fw={600}>{campaign.name}</Text>
-                            <Text size="xs" c="dimmed">#{campaign.id}</Text>
+                            <Text size="sm" className={styles.campaignName}>{campaign.name}</Text>
+                            <Text size="xs" className={styles.muted}>#{campaign.id}</Text>
                           </Table.Td>
                           <Table.Td>
                             <Badge variant="light" color={states[campaign.state]?.color ?? 'gray'}>
@@ -104,7 +105,7 @@ export function CampaignsPage() {
                             </Badge>
                           </Table.Td>
                           <Table.Td>
-                            <Group gap="xs">
+                            <Group className={styles.rowActions}>
                               <Anchor href={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
                               <Anchor href={campaign.admin_url} size="sm" target="_blank" rel="noopener noreferrer">
                                 Открыть в Keitaro
@@ -118,9 +119,9 @@ export function CampaignsPage() {
                 </Table.ScrollContainer>
               </Paper>
             )}
-            <Group justify="flex-end">
+            <Group className={styles.pagination}>
               <Button variant="default" disabled={page === 0} onClick={() => loadPage(page - 1)}>Назад</Button>
-              <Text size="sm" c="dimmed">Страница {page + 1}</Text>
+              <Text size="sm" className={styles.muted}>Страница {page + 1}</Text>
               <Button variant="default" disabled={!list.data.has_more} onClick={() => loadPage(page + 1)}>Далее</Button>
             </Group>
           </>

@@ -2,14 +2,10 @@ import { Button, Group, Loader, Select, Stack, Text } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 
-import { type Offer, searchOffers } from '../api/offers';
-
-interface OfferSelectProps {
-  value: Offer | null;
-  onChange: (offer: Offer | null) => void;
-  disabled?: boolean;
-  excludedIds?: readonly number[];
-}
+import { searchOffers } from '../api/offers';
+import type { Offer } from '../api/offers.dto';
+import styles from './OfferSelect.module.css';
+import type { OfferSelectProps } from './OfferSelect.types';
 
 export function OfferSelect({ value, onChange, disabled, excludedIds }: OfferSelectProps) {
   const [search, setSearch] = useState('');
@@ -41,7 +37,7 @@ export function OfferSelect({ value, onChange, disabled, excludedIds }: OfferSel
   const searching = loading || query !== searchTerm;
 
   return (
-    <Stack gap={4}>
+    <Stack className={styles.root}>
       <Select
         label="Оффер"
         placeholder="Поиск по названию или ID"
@@ -57,8 +53,8 @@ export function OfferSelect({ value, onChange, disabled, excludedIds }: OfferSel
         rightSection={searching && !value ? <Loader size="xs" /> : undefined}
       />
       {failed && (
-        <Group gap="xs">
-          <Text size="sm" c="red">Не удалось загрузить офферы.</Text>
+        <Group className={styles.errorRow}>
+          <Text size="sm" className={styles.errorMessage}>Не удалось загрузить офферы.</Text>
           <Button type="button" size="compact-xs" variant="subtle" onClick={() => setAttempt((value) => value + 1)}>
             Повторить
           </Button>

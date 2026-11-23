@@ -2,23 +2,20 @@ import { Alert, Anchor, Badge, Button, Container, Group, Loader, Modal, Stack, T
 import { useEffect, useRef, useState } from 'react';
 
 import {
-  type CampaignEditor,
-  type OfferEdit,
   discardDraft,
   editDraft,
   publishDraft,
   readEditor,
 } from '../../shared/api/campaign-editor';
+import type { CampaignEditor, OfferEdit } from '../../shared/api/campaign-editor.dto';
 import { ApiError } from '../../shared/api/http';
 import { useCampaignEvents } from '../../shared/hooks/useCampaignEvents';
+import layoutStyles from '../../shared/styles/PageLayout.module.css';
+import styles from './CampaignEditorPage.module.css';
+import type { CampaignEditorPageProps, RefreshRequest } from './CampaignEditorPage.types';
 import { StreamEditor } from './components/StreamEditor';
 
-interface RefreshRequest {
-  revision: string | null;
-  force: boolean;
-}
-
-export function CampaignEditorPage({ id }: { id: number }) {
+export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   const [editor, setEditor] = useState<CampaignEditor | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -147,12 +144,12 @@ export function CampaignEditorPage({ id }: { id: number }) {
   const warningOpen = Boolean(changed && (confirming || dismissedRevision !== editor?.remote_revision));
 
   return (
-    <Container component="main" size="lg" py={{ base: 'lg', sm: 48 }}>
-      <Stack gap="lg">
+    <Container component="main" size="lg" className={layoutStyles.root}>
+      <Stack className={layoutStyles.content}>
         <Anchor href="/" size="sm">Все кампании</Anchor>
-        <Group justify="space-between" align="flex-start">
-          <Stack gap="xs">
-            <Group gap="sm">
+        <Group className={styles.header}>
+          <Stack className={styles.compact}>
+            <Group className={styles.title}>
               <Title order={1}>{editor?.campaign.name ?? 'Редактор кампании'}</Title>
               {hasDraft && <Badge color="yellow">Черновик</Badge>}
             </Group>
@@ -162,7 +159,7 @@ export function CampaignEditorPage({ id }: { id: number }) {
               </Anchor>
             )}
           </Stack>
-          <Group gap="xs">
+          <Group className={styles.compact}>
             <Button variant="default" disabled={busy} onClick={() => void run(() => readEditor(id))}>Обновить</Button>
             {hasDraft && editor && (
               <>
@@ -183,7 +180,7 @@ export function CampaignEditorPage({ id }: { id: number }) {
             )}
           </Group>
         </Group>
-        {busy && <Group role="status" gap="xs"><Loader size="xs" /><Text size="sm">Выполняем запрос…</Text></Group>}
+        {busy && <Group role="status" className={styles.compact}><Loader size="xs" /><Text size="sm">Выполняем запрос…</Text></Group>}
         {!editor && !busy && !error && <Text role="status">Загрузка кампании…</Text>}
         {error && <Alert color="red" role="alert">{error}</Alert>}
         {notice && <Alert color="teal" role="status">{notice}</Alert>}
@@ -192,7 +189,7 @@ export function CampaignEditorPage({ id }: { id: number }) {
             Проверьте текущие настройки перед публикацией черновика.
           </Alert>
         )}
-        {editor?.streams.length === 0 && <Text c="dimmed">У кампании нет потоков.</Text>}
+        {editor?.streams.length === 0 && <Text className={styles.muted}>У кампании нет потоков.</Text>}
         {editor?.streams.map((stream) => <StreamEditor key={stream.id} stream={stream} busy={busy} onEdit={update} />)}
       </Stack>
       <Modal
@@ -208,8 +205,8 @@ export function CampaignEditorPage({ id }: { id: number }) {
           <Text size="sm">
             Проверьте текущие настройки в Keitaro. Публикация перезапишет офферы и доли в изменённых потоках.
           </Text>
-          {error && <Text size="sm" c="red">{error}</Text>}
-          <Group gap="xs">
+          {error && <Text size="sm" className={styles.error}>{error}</Text>}
+          <Group className={styles.compact}>
             <Button
               component="a"
               href={editor?.campaign.admin_url}
