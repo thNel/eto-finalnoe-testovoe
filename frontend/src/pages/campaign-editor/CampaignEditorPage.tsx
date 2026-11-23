@@ -1,5 +1,6 @@
 import { Alert, Anchor, Badge, Button, Container, Group, Loader, Modal, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router';
 
 import {
   discardDraft,
@@ -146,7 +147,7 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   return (
     <Container component="main" size="lg" className={layoutStyles.root}>
       <Stack className={layoutStyles.content}>
-        <Anchor href="/" size="sm">Все кампании</Anchor>
+        <Anchor component={Link} to="/" size="sm">Все кампании</Anchor>
         <Group className={styles.header}>
           <Stack className={styles.compact}>
             <Group className={styles.title}>

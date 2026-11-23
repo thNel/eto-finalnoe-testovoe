@@ -1,5 +1,6 @@
 import { Alert, Anchor, Badge, Button, Container, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 
 import { listCampaigns } from '../../shared/api/campaigns/campaigns';
 import type { CreatedCampaign } from '../../shared/api/campaigns/campaigns.dto';
@@ -60,7 +61,7 @@ export function CampaignsPage() {
         {created && (
           <Alert color="teal" title={`Кампания «${created.name}» создана`} role="status">
             <Group>
-              <Anchor href={`/campaigns/${created.id}`}>Открыть редактор</Anchor>
+              <Anchor component={Link} to={`/campaigns/${created.id}`}>Открыть редактор</Anchor>
               <Anchor href={created.tracking_url} target="_blank" rel="noopener noreferrer">Ссылка кампании</Anchor>
               <Anchor href={created.admin_url} target="_blank" rel="noopener noreferrer">Открыть в Keitaro</Anchor>
             </Group>
@@ -106,7 +107,7 @@ export function CampaignsPage() {
                           </Table.Td>
                           <Table.Td>
                             <Group className={styles.rowActions}>
-                              <Anchor href={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
+                              <Anchor component={Link} to={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
                               <Anchor href={campaign.admin_url} size="sm" target="_blank" rel="noopener noreferrer">
                                 Открыть в Keitaro
                               </Anchor>

@@ -29,6 +29,7 @@ flowchart LR
 | `backend/app/database/` | Подключение к БД, модель SQLAlchemy и хранение состояния редактора |
 | `backend/app/keitaro/` | HTTP-клиент Admin API, схемы ответов Keitaro и ошибки связи |
 | `backend/app/config.py` | Настройки приложения и загрузка `backend/.env` |
+| `frontend/src/app/AppRouter.tsx` | Маршруты React Router для списка и редактора кампаний |
 | `frontend/src/shared/api/` | HTTP-клиент, типы и запросы к API кампаний, офферов и редактора |
 | `frontend/src/pages/campaigns/` | Список кампаний и форма создания в `components/` |
 | `frontend/src/pages/campaign-editor/` | Страница редактора и компонент потока в `components/` |
