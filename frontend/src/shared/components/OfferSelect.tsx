@@ -2,7 +2,7 @@ import { Button, Group, Loader, Select, Stack, Text } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 
-import { type Offer, searchOffers } from './api';
+import { type Offer, searchOffers } from '../api/offers';
 
 interface OfferSelectProps {
   value: Offer | null;

@@ -4,8 +4,8 @@ import { MantineProvider } from '@mantine/core';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { CampaignEditorPage } from './CampaignEditorPage';
-import { CampaignsPage } from './CampaignsPage';
+import { CampaignEditorPage } from './pages/campaign-editor/CampaignEditorPage';
+import { CampaignsPage } from './pages/campaigns/CampaignsPage';
 
 const editorPath = /^\/campaigns\/([1-9]\d*)\/?$/.exec(window.location.pathname);
 

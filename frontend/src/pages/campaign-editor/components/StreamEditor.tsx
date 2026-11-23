@@ -1,8 +1,9 @@
 import { Badge, Box, Button, Group, NumberInput, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
-import { type EditorOffer, type EditorStream, type Offer, type OfferEdit } from './api';
-import { OfferSelect } from './OfferSelect';
+import { type EditorOffer, type EditorStream, type OfferEdit } from '../../../shared/api/campaign-editor';
+import { type Offer } from '../../../shared/api/offers';
+import { OfferSelect } from '../../../shared/components/OfferSelect';
 
 interface StreamEditorProps {
   stream: EditorStream;

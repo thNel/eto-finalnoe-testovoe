@@ -27,11 +27,11 @@ flowchart LR
 | `backend/app/editor.py` | Сверка с Keitaro, перерасчёт долей и логика публикации |
 | `backend/app/editor_store.py` | Модель SQLAlchemy и операции чтения и записи состояния редактора |
 | `backend/app/campaign_events.py` | Подписки WebSocket и опрос Keitaro для открытых кампаний |
-| `frontend/src/api.ts` | Типы и клиент REST |
-| `frontend/src/CampaignsPage.tsx`, `CampaignForm.tsx` | Список и форма создания |
-| `frontend/src/CampaignEditorPage.tsx`, `StreamEditor.tsx` | Вид редактора и действия в потоках |
-| `frontend/src/OfferSelect.tsx` | Общий поиск офферов для формы и редактора |
-| `frontend/src/useCampaignEvents.ts` | Подключение WebSocket и переподключение |
+| `frontend/src/shared/api/` | HTTP-клиент, типы и запросы к API кампаний, офферов и редактора |
+| `frontend/src/pages/campaigns/` | Список кампаний и форма создания в `components/` |
+| `frontend/src/pages/campaign-editor/` | Страница редактора и компонент потока в `components/` |
+| `frontend/src/shared/components/OfferSelect.tsx` | Общий поиск офферов для формы и редактора |
+| `frontend/src/shared/hooks/useCampaignEvents.ts` | Подключение WebSocket и переподключение |
 
 ## Запросы к Keitaro
 

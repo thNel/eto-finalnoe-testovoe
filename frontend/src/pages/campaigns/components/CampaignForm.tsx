@@ -1,8 +1,10 @@
 import { Alert, Anchor, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { type FormEvent, useState } from 'react';
 
-import { ApiError, type ApiErrorDetail, type CreatedCampaign, type Offer, createCampaign } from './api';
-import { OfferSelect } from './OfferSelect';
+import { type CreatedCampaign, createCampaign } from '../../../shared/api/campaigns';
+import { ApiError, type ApiErrorDetail } from '../../../shared/api/http';
+import { type Offer } from '../../../shared/api/offers';
+import { OfferSelect } from '../../../shared/components/OfferSelect';
 
 interface CampaignFormProps {
   onClose: () => void;

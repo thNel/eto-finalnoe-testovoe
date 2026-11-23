@@ -1,8 +1,8 @@
 import { Alert, Anchor, Badge, Button, Container, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-import { type CampaignPage, type CreatedCampaign, listCampaigns } from './api';
-import { CampaignForm } from './CampaignForm';
+import { type CampaignPage, type CreatedCampaign, listCampaigns } from '../../shared/api/campaigns';
+import { CampaignForm } from './components/CampaignForm';
 
 const PAGE_SIZE = 25;
 

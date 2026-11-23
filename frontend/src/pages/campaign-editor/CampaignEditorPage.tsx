@@ -2,16 +2,16 @@ import { Alert, Anchor, Badge, Button, Container, Group, Loader, Modal, Stack, T
 import { useEffect, useRef, useState } from 'react';
 
 import {
-  ApiError,
   type CampaignEditor,
   type OfferEdit,
   discardDraft,
   editDraft,
   publishDraft,
   readEditor,
-} from './api';
-import { StreamEditor } from './StreamEditor';
-import { useCampaignEvents } from './useCampaignEvents';
+} from '../../shared/api/campaign-editor';
+import { ApiError } from '../../shared/api/http';
+import { useCampaignEvents } from '../../shared/hooks/useCampaignEvents';
+import { StreamEditor } from './components/StreamEditor';
 
 interface RefreshRequest {
   revision: string | null;
