@@ -1,26 +1,19 @@
-import { Badge, Box, Button, Group, Paper, Stack, Table, Text, Title } from '@mantine/core';
+import { Badge, Button, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
 import type { OfferEdit } from '../../../../shared/api/campaign-editor/campaign-editor.dto';
-import type { Offer } from '../../../../shared/api/offers/offers.dto';
-import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
+import { DataTable } from '../../../../shared/components/DataTable/DataTable';
+import { StreamOfferPicker } from '../StreamOfferPicker/StreamOfferPicker';
+import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
 import styles from './StreamEditor.module.css';
 import type { StreamEditorProps } from './StreamEditor.types';
-import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
 
 export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   const [adding, setAdding] = useState(false);
-  const [selected, setSelected] = useState<Offer | null>(null);
+  const columns = ['Оффер', 'В Keitaro', stream.edited ? 'В черновике' : 'Доля, %', 'Действия'];
 
   function edit(offerId: number, operation: OfferEdit['operation'], share?: number) {
     return onEdit({ stream_id: stream.id, offer_id: offerId, operation, share });
-  }
-
-  async function add() {
-    if (selected && await edit(selected.id, 'add')) {
-      setSelected(null);
-      setAdding(false);
-    }
   }
 
   return (
@@ -42,52 +35,21 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
           )}
         </Group>
         {adding && (
-          <Group className={styles.addOffer}>
-            <Box className={styles.offerSelect}>
-              <OfferSelect
-                value={selected}
-                onChange={setSelected}
-                disabled={busy}
-                excludedIds={stream.offers.filter((offer) => offer.state !== 'removed').map((offer) => offer.id)}
-              />
-            </Box>
-            <Button size="sm" disabled={busy || !selected} onClick={() => void add()}>Добавить</Button>
-            <Button
-              variant="default"
-              size="sm"
-              disabled={busy}
-              onClick={() => { setAdding(false); setSelected(null); }}
-            >
-              Отмена
-            </Button>
-          </Group>
+          <StreamOfferPicker
+            busy={busy}
+            excludedIds={stream.offers.filter((offer) => offer.state !== 'removed').map((offer) => offer.id)}
+            onAdd={(offerId) => edit(offerId, 'add')}
+            onClose={() => setAdding(false)}
+          />
         )}
         {stream.offers.length === 0 ? (
           <Text size="sm" className={styles.muted}>В потоке нет офферов.</Text>
         ) : (
-          <Table.ScrollContainer minWidth={600}>
-            <Table verticalSpacing="sm">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Оффер</Table.Th>
-                  <Table.Th>В Keitaro</Table.Th>
-                  <Table.Th>{stream.edited ? 'В черновике' : 'Доля, %'}</Table.Th>
-                  <Table.Th>Действия</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {stream.offers.map((offer) => (
-                  <StreamOfferRow
-                    key={offer.id}
-                    offer={offer}
-                    editable={stream.editable}
-                    busy={busy}
-                    onEdit={edit}
-                  />
-                ))}
-              </Table.Tbody>
-            </Table>
-          </Table.ScrollContainer>
+          <DataTable columns={columns} minWidth={600}>
+            {stream.offers.map((offer) => (
+              <StreamOfferRow key={offer.id} offer={offer} editable={stream.editable} busy={busy} onEdit={edit} />
+            ))}
+          </DataTable>
         )}
       </Stack>
     </Paper>

@@ -1,20 +1,7 @@
-.header {
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
 .compact {
   gap: var(--mantine-spacing-xs);
 }
 
-.title {
-  gap: var(--mantine-spacing-sm);
-}
-
 .muted {
   color: var(--mantine-color-dimmed);
-}
-
-.error {
-  color: var(--mantine-color-red-filled);
 }

@@ -1,0 +1,7 @@
+.compact {
+  gap: var(--mantine-spacing-xs);
+}
+
+.error {
+  color: var(--mantine-color-red-filled);
+}

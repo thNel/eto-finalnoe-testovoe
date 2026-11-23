@@ -15,15 +15,6 @@
   gap: var(--mantine-spacing-xs);
 }
 
-.addOffer {
-  align-items: end;
-}
-
-.offerSelect {
-  flex: 1;
-  min-width: calc(12.5rem * var(--mantine-scale));
-}
-
 .muted {
   color: var(--mantine-color-dimmed);
 }

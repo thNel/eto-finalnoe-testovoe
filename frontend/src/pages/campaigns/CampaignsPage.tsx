@@ -1,49 +1,18 @@
-import { Alert, Anchor, Badge, Button, Container, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Alert, Button, Group, Loader, Text, Title } from '@mantine/core';
+import { useState } from 'react';
 
-import { listCampaigns } from '../../shared/api/campaigns/campaigns';
 import type { CreatedCampaign } from '../../shared/api/campaigns/campaigns.dto';
-import layoutStyles from '../../shared/styles/PageLayout.module.css';
+import { PageLayout } from '../../shared/components/PageLayout/PageLayout';
 import styles from './CampaignsPage.module.css';
-import type { ListState } from './CampaignsPage.types';
 import { CampaignForm } from './components/CampaignForm/CampaignForm';
-
-const PAGE_SIZE = 25;
-
-const states: Record<string, { label: string; color: string }> = {
-  active: { label: 'Активна', color: 'teal' },
-  disabled: { label: 'Отключена', color: 'gray' },
-  deleted: { label: 'В архиве', color: 'gray' },
-};
+import { CampaignTable } from './components/CampaignTable/CampaignTable';
+import { CreationNotice } from './components/CreationNotice/CreationNotice';
+import { useCampaignList } from './hooks/useCampaignList';
 
 export function CampaignsPage() {
-  const [list, setList] = useState<ListState>({ status: 'loading' });
-  const [page, setPage] = useState(0);
-  const [request, setRequest] = useState(0);
+  const { list, page, loadPage } = useCampaignList();
   const [formOpen, setFormOpen] = useState(false);
   const [created, setCreated] = useState<CreatedCampaign | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    listCampaigns(page * PAGE_SIZE, PAGE_SIZE, controller.signal)
-      .then((data) => { if (!controller.signal.aborted) setList({ status: 'ready', data }); })
-      .catch((error: unknown) => {
-        if (!controller.signal.aborted) {
-          setList({
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Не удалось загрузить кампании.',
-          });
-        }
-      });
-    return () => controller.abort();
-  }, [page, request]);
-
-  function loadPage(nextPage: number) {
-    setList({ status: 'loading' });
-    setPage(nextPage);
-    setRequest((value) => value + 1);
-  }
 
   function showCreated(campaign: CreatedCampaign) {
     setFormOpen(false);
@@ -52,83 +21,25 @@ export function CampaignsPage() {
   }
 
   return (
-    <Container component="main" size="lg" className={layoutStyles.root}>
-      <Stack className={layoutStyles.content}>
-        <Group className={styles.header}>
-          <Title order={1}>Кампании Keitaro</Title>
-          <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
-        </Group>
-        {created && (
-          <Alert color="teal" title={`Кампания «${created.name}» создана`} role="status">
-            <Group>
-              <Anchor component={Link} to={`/campaigns/${created.id}`}>Открыть редактор</Anchor>
-              <Anchor href={created.tracking_url} target="_blank" rel="noopener noreferrer">Ссылка кампании</Anchor>
-              <Anchor href={created.admin_url} target="_blank" rel="noopener noreferrer">Открыть в Keitaro</Anchor>
-            </Group>
-          </Alert>
-        )}
-        {list.status === 'loading' && (
-          <Group role="status"><Loader size="sm" /><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
-        )}
-        {list.status === 'error' && (
-          <Alert color="red" title="Не удалось загрузить кампании" role="alert">
-            <Group className={styles.errorActions}>
-              <Text size="sm">{list.message}</Text>
-              <Button size="compact-sm" variant="default" onClick={() => loadPage(page)}>Повторить</Button>
-            </Group>
-          </Alert>
-        )}
-        {list.status === 'ready' && (
-          <>
-            {list.data.items.length === 0 ? (
-              <Paper withBorder radius="md" className={styles.emptyState}>
-                <Text className={styles.muted}>Кампаний на этой странице пока нет.</Text>
-              </Paper>
-            ) : (
-              <Paper withBorder radius="md">
-                <Table.ScrollContainer minWidth={440}>
-                  <Table highlightOnHover verticalSpacing="sm" horizontalSpacing="md">
-                    <Table.Thead><Table.Tr>
-                      <Table.Th>Кампания</Table.Th>
-                      <Table.Th>Статус</Table.Th>
-                      <Table.Th>Действие</Table.Th>
-                    </Table.Tr></Table.Thead>
-                    <Table.Tbody>
-                      {list.data.items.map((campaign) => (
-                        <Table.Tr key={campaign.id}>
-                          <Table.Td>
-                            <Text size="sm" className={styles.campaignName}>{campaign.name}</Text>
-                            <Text size="xs" className={styles.muted}>#{campaign.id}</Text>
-                          </Table.Td>
-                          <Table.Td>
-                            <Badge variant="light" color={states[campaign.state]?.color ?? 'gray'}>
-                              {states[campaign.state]?.label ?? campaign.state}
-                            </Badge>
-                          </Table.Td>
-                          <Table.Td>
-                            <Group className={styles.rowActions}>
-                              <Anchor component={Link} to={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
-                              <Anchor href={campaign.admin_url} size="sm" target="_blank" rel="noopener noreferrer">
-                                Открыть в Keitaro
-                              </Anchor>
-                            </Group>
-                          </Table.Td>
-                        </Table.Tr>
-                      ))}
-                    </Table.Tbody>
-                  </Table>
-                </Table.ScrollContainer>
-              </Paper>
-            )}
-            <Group className={styles.pagination}>
-              <Button variant="default" disabled={page === 0} onClick={() => loadPage(page - 1)}>Назад</Button>
-              <Text size="sm" className={styles.muted}>Страница {page + 1}</Text>
-              <Button variant="default" disabled={!list.data.has_more} onClick={() => loadPage(page + 1)}>Далее</Button>
-            </Group>
-          </>
-        )}
-      </Stack>
+    <PageLayout>
+      <Group className={styles.header}>
+        <Title order={1}>Кампании Keitaro</Title>
+        <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
+      </Group>
+      {created && <CreationNotice campaign={created} />}
+      {list.status === 'loading' && (
+        <Group role="status"><Loader size="sm" /><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
+      )}
+      {list.status === 'error' && (
+        <Alert color="red" title="Не удалось загрузить кампании" role="alert">
+          <Group className={styles.errorActions}>
+            <Text size="sm">{list.message}</Text>
+            <Button size="compact-sm" variant="default" onClick={() => loadPage(page)}>Повторить</Button>
+          </Group>
+        </Alert>
+      )}
+      {list.status === 'ready' && <CampaignTable data={list.data} page={page} onPageChange={loadPage} />}
       {formOpen && <CampaignForm onClose={() => setFormOpen(false)} onCreated={showCreated} />}
-    </Container>
+    </PageLayout>
   );
 }

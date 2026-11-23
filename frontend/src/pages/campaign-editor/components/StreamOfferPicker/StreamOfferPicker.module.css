@@ -1,0 +1,8 @@
+.root {
+  align-items: end;
+}
+
+.offerSelect {
+  flex: 1;
+  min-width: calc(12.5rem * var(--mantine-scale));
+}

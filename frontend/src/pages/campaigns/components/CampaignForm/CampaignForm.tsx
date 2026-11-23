@@ -1,62 +1,17 @@
-import { Alert, Anchor, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
-import { type FormEvent, useState } from 'react';
+import { Button, Group, Stack, TextInput } from '@mantine/core';
 
-import { createCampaign } from '../../../../shared/api/campaigns/campaigns';
-import { ApiError } from '../../../../shared/api/http/http';
-import type { ApiErrorDetail } from '../../../../shared/api/http/http.dto';
-import type { Offer } from '../../../../shared/api/offers/offers.dto';
+import { ActionDialog } from '../../../../shared/components/ActionDialog/ActionDialog';
 import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
 import styles from './CampaignForm.module.css';
 import type { CampaignFormProps } from './CampaignForm.types';
-
-const stepNames: Record<string, string> = {
-  validate: 'Проверка настроек',
-  campaign: 'Создание кампании',
-  geo_stream: 'Настройка GEO-потока',
-  offer_stream: 'Настройка потока с оффером',
-  verify: 'Проверка настроек в Keitaro',
-  enable: 'Включение кампании',
-};
+import { CreationError } from './components/CreationError/CreationError';
+import { useCampaignForm } from './hooks/useCampaignForm';
 
 export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
-  const [name, setName] = useState('');
-  const [geo, setGeo] = useState('');
-  const [selected, setSelected] = useState<Offer | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<ApiErrorDetail | null>(null);
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (submitting || !selected) return;
-
-    const codes = geo.trim().toUpperCase().split(/[\s,]+/).filter(Boolean);
-    if (!name.trim() || !codes.length || codes.some((code) => !/^[A-Z]{2}$/.test(code))) {
-      setError({ message: 'Укажите название кампании и GEO двухбуквенными кодами, например PL, AU.' });
-      return;
-    }
-
-    setError(null);
-    setSubmitting(true);
-    try {
-      onCreated(await createCampaign({ name: name.trim(), geo: codes, offer_id: selected.id }));
-    } catch (failure) {
-      setError(failure instanceof ApiError
-        ? failure.detail
-        : { message: 'Связь с API прервалась. Обновите список кампаний перед повторной попыткой.' });
-      setSubmitting(false);
-    }
-  }
+  const { name, setName, geo, setGeo, selected, setSelected, submitting, error, submit } = useCampaignForm(onCreated);
 
   return (
-    <Modal
-      opened
-      onClose={onClose}
-      title="Новая кампания"
-      closeOnClickOutside={!submitting}
-      closeOnEscape={!submitting}
-      withCloseButton={!submitting}
-      centered
-    >
+    <ActionDialog title="Новая кампания" busy={submitting} onClose={onClose}>
       <form onSubmit={submit}>
         <Stack>
           <TextInput
@@ -79,29 +34,13 @@ export function CampaignForm({ onClose, onCreated }: CampaignFormProps) {
             disabled={submitting}
           />
           <OfferSelect value={selected} onChange={setSelected} disabled={submitting} />
-          {error && (
-            <Alert color="red" title={error.step ? stepNames[error.step] : 'Не удалось создать кампанию'} role="alert">
-              {error.message}
-              {error.campaign_id && (
-                <Text size="sm" className={styles.errorDetail}>
-                  <Anchor href={error.admin_url} target="_blank" rel="noopener noreferrer">
-                    Кампания №{error.campaign_id}
-                  </Anchor>
-                  {error.campaign_state === 'disabled' && ' отключена.'}
-                  {error.campaign_state === 'unknown' && ' — статус не подтверждён.'}
-                </Text>
-              )}
-              {!error.campaign_id && error.alias && (
-                <Text size="sm" className={styles.errorDetail}>Проверьте в Keitaro, появилась ли кампания с идентификатором {error.alias}.</Text>
-              )}
-            </Alert>
-          )}
+          {error && <CreationError error={error} />}
           <Group className={styles.actions}>
             <Button type="button" variant="default" disabled={submitting} onClick={onClose}>Отмена</Button>
             <Button type="submit" loading={submitting} disabled={!selected}>Создать кампанию</Button>
           </Group>
         </Stack>
       </form>
-    </Modal>
+    </ActionDialog>
   );
 }

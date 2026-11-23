@@ -6,22 +6,6 @@
   gap: var(--mantine-spacing-sm);
 }
 
-.emptyState {
-  padding: var(--mantine-spacing-lg);
-}
-
-.campaignName {
-  font-weight: 600;
-}
-
-.rowActions {
-  gap: var(--mantine-spacing-xs);
-}
-
-.pagination {
-  justify-content: flex-end;
-}
-
 .muted {
   color: var(--mantine-color-dimmed);
 }

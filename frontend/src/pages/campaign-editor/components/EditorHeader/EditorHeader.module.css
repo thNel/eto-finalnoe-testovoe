@@ -1,0 +1,12 @@
+.root {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.compact {
+  gap: var(--mantine-spacing-xs);
+}
+
+.title {
+  gap: var(--mantine-spacing-sm);
+}

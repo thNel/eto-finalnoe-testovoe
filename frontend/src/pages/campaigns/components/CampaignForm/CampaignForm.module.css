@@ -1,7 +1,3 @@
-.errorDetail {
-  margin-top: calc(0.25rem * var(--mantine-scale));
-}
-
 .actions {
   justify-content: flex-end;
 }
