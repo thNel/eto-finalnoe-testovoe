@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Integer
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
-from app.db import Base, engine
+from app.database.connection import Base, engine
 
 
 class EditorState(Base):

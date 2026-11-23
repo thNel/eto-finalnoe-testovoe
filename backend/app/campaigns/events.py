@@ -3,14 +3,13 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Annotated, Literal, TypedDict
+from typing import Literal, TypedDict
 
-from fastapi import APIRouter, HTTPException, Path, WebSocket, WebSocketDisconnect
+from app.campaigns.errors import EditorError
+from app.campaigns.snapshot import editor_lock, read_snapshot
+from app.keitaro.client import KeitaroClient, KeitaroError
 
-from app.editor import editor_lock, read_snapshot
-from app.keitaro import KeitaroClient, KeitaroError
 
-router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
@@ -73,11 +72,11 @@ class CampaignEvents:
                 self._notify(campaign_id, watch, snapshot.revision())
             except KeitaroError as error:
                 logger.warning("Polling Keitaro for campaign %s failed: %s", campaign_id, error)
-            except HTTPException as error:
-                if error.status_code == 404:
+            except EditorError as error:
+                if error.status == 404:
                     self._notify(campaign_id, watch, None)
                 else:
-                    logger.warning("Polling campaign %s failed with status %s", campaign_id, error.status_code)
+                    logger.warning("Polling campaign %s failed with status %s", campaign_id, error.status)
             await asyncio.sleep(self.interval)
 
     @staticmethod
@@ -94,40 +93,3 @@ class CampaignEvents:
             if queue.full():
                 queue.get_nowait()
             queue.put_nowait(event)
-
-
-async def _send_updates(socket: WebSocket, queue: asyncio.Queue[CampaignEvent]) -> None:
-    while True:
-        await socket.send_json(await queue.get())
-
-
-async def _wait_for_disconnect(socket: WebSocket) -> None:
-    while (await socket.receive())["type"] != "websocket.disconnect":
-        pass
-
-
-@router.websocket("/campaigns/{campaign_id}/events")
-async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt=0)]) -> None:
-    origin = socket.headers.get("origin")
-    host = socket.headers.get("host")
-    if origin is not None and (not host or origin not in (f"http://{host}", f"https://{host}")):
-        await socket.close(code=1008)
-        return
-
-    await socket.accept()
-    events: CampaignEvents = socket.app.state.campaign_events
-    async with events.subscribe(campaign_id) as queue:
-        tasks = [
-            asyncio.create_task(_send_updates(socket, queue)),
-            asyncio.create_task(_wait_for_disconnect(socket)),
-        ]
-        try:
-            done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-            for task in done:
-                task.result()
-        except WebSocketDisconnect:
-            pass
-        finally:
-            for task in tasks:
-                task.cancel()
-            await asyncio.gather(*tasks, return_exceptions=True)

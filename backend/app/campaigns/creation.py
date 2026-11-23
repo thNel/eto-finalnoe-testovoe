@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field, PositiveInt, field_validator
 from pycountry import countries
 
 from app.config import Settings
-from app.keitaro import Campaign, Domain, KeitaroClient, KeitaroError, Resource, Stream
+from app.keitaro.client import KeitaroClient, KeitaroError
+from app.keitaro.schemas import Campaign, Domain, Resource, Stream
 
 GOOGLE_URL = "https://www.google.com/"
 

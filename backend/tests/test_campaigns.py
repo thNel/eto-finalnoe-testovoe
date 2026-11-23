@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import httpx
 
-from app.campaign_routes import get_keitaro
+from app.api.dependencies import get_keitaro
 from app.config import Settings
-from app.keitaro import KeitaroClient
+from app.keitaro.client import KeitaroClient
 from app.main import app
 
 
@@ -78,7 +78,8 @@ class CreateCampaignTest(unittest.IsolatedAsyncioTestCase):
             keitaro_campaign_group="FORTESTS",
             keitaro_traffic_source="FORTESTS",
         )
-        self.enterContext(patch("app.campaign_routes.settings", config))
+        self.enterContext(patch("app.api.campaigns.settings", config))
+        self.enterContext(patch("app.api.schemas.settings", config))
         self.http = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test")
         self.addAsyncCleanup(self.http.aclose)
 

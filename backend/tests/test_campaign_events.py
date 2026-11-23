@@ -2,16 +2,15 @@ import asyncio
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
-from fastapi import HTTPException
-
-from app.campaign_events import CampaignEvents
-from app.keitaro import KeitaroError
+from app.campaigns.errors import EditorError
+from app.campaigns.events import CampaignEvents
+from app.keitaro.client import KeitaroError
 
 
 class CampaignEventsTest(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.client = Mock()
-        self.read = self.enterContext(patch("app.campaign_events.read_snapshot", new_callable=AsyncMock))
+        self.read = self.enterContext(patch("app.campaigns.events.read_snapshot", new_callable=AsyncMock))
         self.events = CampaignEvents(self.client, interval=3600)
         self.addAsyncCleanup(self.events.close)
 
@@ -67,9 +66,9 @@ class CampaignEventsTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual((await self.message(second))["remote_revision"], "after")
 
     async def test_retries_failed_polls_and_notifies_when_campaign_disappears(self):
-        self.read.side_effect = [KeitaroError("Timeout", 504), HTTPException(404)]
+        self.read.side_effect = [KeitaroError("Timeout", 504), EditorError(404, "campaign_missing", "Missing")]
         self.events.interval = 0.01
-        with self.assertLogs("app.campaign_events", level="WARNING"):
+        with self.assertLogs("app.campaigns.events", level="WARNING"):
             async with self.events.subscribe(10) as queue:
                 self.assertIsNone((await self.message(queue))["remote_revision"])
         self.assertEqual(self.read.await_count, 2)

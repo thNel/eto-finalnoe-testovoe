@@ -7,12 +7,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.campaign_events import CampaignEvents, router as events_router
-from app.campaign_routes import router as campaign_router
+from app.api.campaigns import router as campaign_router
+from app.api.editor import router as editor_router
+from app.api.events import router as events_router
+from app.campaigns.errors import EditorError
+from app.campaigns.events import CampaignEvents
 from app.config import settings
-from app.db import engine
-from app.editor_routes import router as editor_router
-from app.keitaro import KeitaroClient, KeitaroError
+from app.database.connection import engine
+from app.keitaro.client import KeitaroClient, KeitaroError
 
 
 @asynccontextmanager
@@ -43,6 +45,11 @@ async def handle_keitaro_error(_: Request, error: KeitaroError) -> JSONResponse:
         status_code=error.status,
         content={"detail": {"message": str(error), "upstream_status": error.upstream_status}},
     )
+
+
+@app.exception_handler(EditorError)
+async def handle_editor_error(_: Request, error: EditorError) -> JSONResponse:
+    return JSONResponse(status_code=error.status, content={"detail": error.detail})
 
 
 @router.get("/health")

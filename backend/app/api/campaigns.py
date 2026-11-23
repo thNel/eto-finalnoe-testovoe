@@ -1,48 +1,16 @@
 from typing import Annotated
 from urllib.parse import quote
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Query
 
-from app.campaigns import CampaignCreationError, CreateCampaign, create_campaign
+from app.api.dependencies import Keitaro
+from app.api.schemas import CampaignPage, CreatedCampaign, campaign_admin_url, summary
+from app.campaigns.creation import CampaignCreationError, CreateCampaign, create_campaign
 from app.config import settings
-from app.keitaro import Campaign, KeitaroClient, KeitaroError, Resource
+from app.keitaro.schemas import Resource
+
 
 router = APIRouter(tags=["campaigns"])
-
-
-class CampaignSummary(Resource):
-    state: str
-    admin_url: str
-
-
-class CampaignPage(BaseModel):
-    items: list[CampaignSummary]
-    has_more: bool
-
-
-class CreatedCampaign(CampaignSummary):
-    tracking_url: str
-
-
-def get_keitaro(request: Request) -> KeitaroClient:
-    return request.app.state.keitaro
-
-
-Keitaro = Annotated[KeitaroClient, Depends(get_keitaro)]
-
-
-def campaign_admin_url(campaign_id: int) -> str:
-    return f"{str(settings.keitaro_base_url).rstrip('/')}/admin/#!/campaigns/{campaign_id}"
-
-
-def summary(campaign: Campaign) -> CampaignSummary:
-    return CampaignSummary(
-        id=campaign.id,
-        name=campaign.name,
-        state=campaign.state,
-        admin_url=campaign_admin_url(campaign.id),
-    )
 
 
 @router.get("/campaigns")

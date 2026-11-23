@@ -1,0 +1,46 @@
+import asyncio
+from typing import Annotated
+
+from fastapi import APIRouter, Path, WebSocket, WebSocketDisconnect
+
+from app.campaigns.events import CampaignEvent, CampaignEvents
+
+
+router = APIRouter()
+
+
+async def _send_updates(socket: WebSocket, queue: asyncio.Queue[CampaignEvent]) -> None:
+    while True:
+        await socket.send_json(await queue.get())
+
+
+async def _wait_for_disconnect(socket: WebSocket) -> None:
+    while (await socket.receive())["type"] != "websocket.disconnect":
+        pass
+
+
+@router.websocket("/campaigns/{campaign_id}/events")
+async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt=0)]) -> None:
+    origin = socket.headers.get("origin")
+    host = socket.headers.get("host")
+    if origin is not None and (not host or origin not in (f"http://{host}", f"https://{host}")):
+        await socket.close(code=1008)
+        return
+
+    await socket.accept()
+    events: CampaignEvents = socket.app.state.campaign_events
+    async with events.subscribe(campaign_id) as queue:
+        tasks = [
+            asyncio.create_task(_send_updates(socket, queue)),
+            asyncio.create_task(_wait_for_disconnect(socket)),
+        ]
+        try:
+            done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                task.result()
+        except WebSocketDisconnect:
+            pass
+        finally:
+            for task in tasks:
+                task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)

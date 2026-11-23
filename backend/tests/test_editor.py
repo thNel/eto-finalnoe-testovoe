@@ -7,9 +7,9 @@ from unittest.mock import patch
 import httpx
 from sqlalchemy import create_engine
 
-from app.campaign_routes import get_keitaro
-from app.db import Base
-from app.keitaro import KeitaroClient
+from app.api.dependencies import get_keitaro
+from app.database.connection import Base
+from app.keitaro.client import KeitaroClient
 from app.main import app
 
 
@@ -68,7 +68,7 @@ class EditorTest(unittest.IsolatedAsyncioTestCase):
         engine = create_engine(f"sqlite:///{Path(directory, 'test.sqlite3').as_posix()}")
         self.addCleanup(engine.dispose)
         Base.metadata.create_all(engine)
-        self.enterContext(patch("app.editor_store.engine", engine))
+        self.enterContext(patch("app.database.editor.engine", engine))
 
         self.tracker = Tracker()
         upstream = httpx.AsyncClient(

@@ -20,13 +20,15 @@ flowchart LR
 | Файл или модуль | Ответственность |
 |---|---|
 | `backend/app/main.py` | Создание FastAPI, подключение маршрутов, запуск и закрытие общих HTTP-клиента и сервиса событий |
-| `backend/app/keitaro.py` | Запросы к Admin API, заголовок `Api-Key`, разбор ответов и ошибки связи |
-| `backend/app/campaign_routes.py` | Список кампаний, поиск офферов и маршрут создания |
-| `backend/app/campaigns.py` | Валидация GEO и последовательность создания кампании |
-| `backend/app/editor_routes.py` | Чтение редактора, изменение, отмена и публикация черновика |
-| `backend/app/editor.py` | Сверка с Keitaro, перерасчёт долей и логика публикации |
-| `backend/app/editor_store.py` | Модель SQLAlchemy и операции чтения и записи состояния редактора |
-| `backend/app/campaign_events.py` | Подписки WebSocket и опрос Keitaro для открытых кампаний |
+| `backend/app/api/` | REST, WebSocket, зависимости FastAPI и общие схемы ответов |
+| `backend/app/campaigns/creation.py` | Валидация GEO и последовательность создания кампании |
+| `backend/app/campaigns/drafts.py` | Версии черновика, правки офферов и распределение долей |
+| `backend/app/campaigns/publication.py` | Сверка перед публикацией, запись в Keitaro, история удаления и отмена |
+| `backend/app/campaigns/snapshot.py`, `views.py` | Чтение и сравнение конфигурации, формирование состояния редактора |
+| `backend/app/campaigns/events.py` | Общий цикл опроса Keitaro и рассылка изменений подписчикам |
+| `backend/app/database/` | Подключение к БД, модель SQLAlchemy и хранение состояния редактора |
+| `backend/app/keitaro/` | HTTP-клиент Admin API, схемы ответов Keitaro и ошибки связи |
+| `backend/app/config.py` | Настройки приложения и загрузка `backend/.env` |
 | `frontend/src/shared/api/` | HTTP-клиент, типы и запросы к API кампаний, офферов и редактора |
 | `frontend/src/pages/campaigns/` | Список кампаний и форма создания в `components/` |
 | `frontend/src/pages/campaign-editor/` | Страница редактора и компонент потока в `components/` |

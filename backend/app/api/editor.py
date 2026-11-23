@@ -1,28 +1,25 @@
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Path, Query
-from pydantic import BaseModel, NonNegativeInt
+from pydantic import BaseModel, Field, NonNegativeInt
 
-from app.campaign_routes import CampaignSummary, Keitaro, summary
-from app.editor import (
-    OfferEdit,
-    PublishRequest,
-    Snapshot,
-    StreamView,
-    apply_edit,
-    discard,
-    editor_lock,
-    get_draft,
-    publish,
-    read_snapshot,
-    require_version,
-    stream_views,
-)
-from app.editor_store import EditorState, load_state
-from app.keitaro import KeitaroClient
+from app.api.dependencies import Keitaro
+from app.api.schemas import CampaignSummary, summary
+from app.campaigns.drafts import OfferEdit, apply_edit, get_draft, require_version
+from app.campaigns.publication import discard, publish
+from app.campaigns.snapshot import Snapshot, editor_lock, read_snapshot
+from app.campaigns.views import StreamView, stream_views
+from app.database.editor import EditorState, load_state
+from app.keitaro.client import KeitaroClient
+
 
 router = APIRouter(tags=["editor"])
 CampaignId = Annotated[int, Path(gt=0)]
+
+
+class PublishRequest(BaseModel):
+    version: NonNegativeInt
+    confirm_revision: str | None = Field(default=None, min_length=64, max_length=64)
 
 
 class CampaignEditor(BaseModel):
