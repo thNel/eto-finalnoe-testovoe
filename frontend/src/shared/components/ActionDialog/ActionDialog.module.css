@@ -1,0 +1,27 @@
+.inner {
+  --action-dialog-height: var(--action-dialog-viewport-height, 100dvh);
+  --action-dialog-offset: calc(var(--action-dialog-height) * 0.05);
+
+  top: var(--action-dialog-viewport-top, 0px);
+  bottom: auto;
+  height: var(--action-dialog-height);
+  padding-block: var(--action-dialog-offset);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  pointer-events: auto;
+}
+
+.inner .content {
+  flex: none;
+  width: var(--modal-size);
+  max-height: none;
+  margin-block: auto;
+  overflow: visible;
+}
+
+.inner .header {
+  position: static;
+}
