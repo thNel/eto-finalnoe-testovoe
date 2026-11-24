@@ -19,7 +19,7 @@
 
 | Переменная | По умолчанию | Назначение |
 |---|---|---|
-| `KEITARO_BASE_URL` | `https://tlgk.host` | Адрес инстанса Keitaro. FastAPI добавляет путь `/admin_api/v1/` |
+| `KEITARO_BASE_URL` | `https://keitaro-for-tests.etolegko.com` | Адрес инстанса Keitaro. FastAPI добавляет путь `/admin_api/v1/` |
 | `KEITARO_API_KEY` | Пусто | Ключ запросов к Admin API. Хранится в `backend/.env` или окружении процесса |
 | `KEITARO_DOMAIN` | Пусто | Имя активного домена без схемы и пути. При пустом значении ключу должен быть доступен ровно один активный домен |
 | `KEITARO_CAMPAIGN_GROUP` | `FORTESTS` | Имя группы кампаний в Keitaro |

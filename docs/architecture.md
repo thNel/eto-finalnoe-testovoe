@@ -109,4 +109,4 @@ Keitaro хранит опубликованные настройки и стат
 
 Подписки и блокировки операций хранятся в памяти процесса FastAPI. Локальный запуск из README использует один процесс приложения. SQLite хранит состояние редактора между перезапусками. WebSocket-подписки восстанавливаются браузером.
 
-[Swagger Keitaro](https://tlgk.host/admin/?object=adminApi) · [Справочник Keitaro Admin API](https://admin-api.docs.keitaro.io/)
+[Swagger Keitaro](https://keitaro-for-tests.etolegko.com/admin/#!/docs/) · [Справочник Keitaro Admin API](https://admin-api.docs.keitaro.io/)

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BACKEND_DIR / ".env", extra="ignore")
 
     database_url: str = DEFAULT_DATABASE_URL
-    keitaro_base_url: HttpUrl = HttpUrl("https://tlgk.host")
+    keitaro_base_url: HttpUrl = HttpUrl("https://keitaro-for-tests.etolegko.com")
     keitaro_api_key: SecretStr = SecretStr("")
     keitaro_domain: str = ""
     keitaro_campaign_group: str = "FORTESTS"
