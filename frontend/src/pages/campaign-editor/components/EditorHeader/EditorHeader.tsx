@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Box, Button, Group, Stack, Switch, Title } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Stack, Title } from '@mantine/core';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/csr/ArrowLeft';
 import { Link } from 'react-router';
 
@@ -8,7 +8,7 @@ import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDef
 import styles from './EditorHeader.module.css';
 import type { EditorHeaderProps } from './EditorHeader.types';
 
-export function EditorHeader({ campaign, hasDraft, busy, onRefresh, onStateChange, onDiscard, onPublish }: EditorHeaderProps) {
+export function EditorHeader({ campaign, hasDraft, busy, onRefresh, onDiscard, onPublish }: EditorHeaderProps) {
   const variant = useLightOrDefaultVariant();
 
   return (
@@ -35,14 +35,6 @@ export function EditorHeader({ campaign, hasDraft, busy, onRefresh, onStateChang
         </Stack>
       </Box>
       <Group className={styles.compact}>
-        {(campaign?.state === 'active' || campaign?.state === 'disabled') && (
-          <Switch
-            label="Кампания включена"
-            checked={campaign.state === 'active'}
-            disabled={busy}
-            onChange={(event) => onStateChange(event.currentTarget.checked)}
-          />
-        )}
         <Button variant="default" disabled={busy} onClick={onRefresh}>Обновить</Button>
         {hasDraft && (
           <>

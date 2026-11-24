@@ -5,3 +5,7 @@
 .error {
   color: var(--mantine-color-red-filled);
 }
+
+.selfRight {
+  margin-inline-start: auto;
+}

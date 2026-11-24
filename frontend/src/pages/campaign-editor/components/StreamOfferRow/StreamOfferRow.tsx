@@ -1,4 +1,6 @@
-import { Button, Group, Table, Text } from '@mantine/core';
+import { ActionIcon, Button, Group, Table, Text } from '@mantine/core';
+import { PushPinIcon } from '@phosphor-icons/react/dist/csr/PushPin';
+import { PushPinSlashIcon } from '@phosphor-icons/react/dist/csr/PushPinSlash';
 import cn from "classnames";
 
 import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
@@ -15,6 +17,8 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
   });
   const removed = offer.state === 'removed';
   const active = offer.state === 'active';
+  const pinLabel = offer.pinned ? 'Открепить' : 'Закрепить';
+  const PinIcon = offer.pinned ? PushPinSlashIcon : PushPinIcon;
 
   return (
     <Table.Tr>
@@ -56,14 +60,16 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
             ) : (
               <>
                 {active && (
-                  <Button
+                  <ActionIcon
                     variant={offer.pinned ? variant : 'subtle'}
-                    size="sm"
+                    size="lg"
+                    aria-label={pinLabel}
+                    title={pinLabel}
                     disabled={busy}
                     onClick={() => void onEdit(offer.id, offer.pinned ? 'unpin' : 'pin')}
                   >
-                    {offer.pinned ? 'Открепить' : 'Закрепить'}
-                  </Button>
+                    <PinIcon size={18} aria-hidden="true" />
+                  </ActionIcon>
                 )}
                 <Button
                   variant="subtle"

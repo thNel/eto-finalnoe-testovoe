@@ -1,4 +1,4 @@
-import { Alert, Group, Loader, Text } from '@mantine/core';
+import { Alert, Group, Loader, Switch, Text } from '@mantine/core';
 
 import { PageLayout } from '../../shared/components/PageLayout/PageLayout';
 import styles from './CampaignEditorPage.module.css';
@@ -10,18 +10,18 @@ import { useCampaignEditor } from './hooks/useCampaignEditor';
 
 export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   const {
-    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming,
+    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming, publicationRequested,
     update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   } = useCampaignEditor(id);
+  const campaign = editor?.campaign;
 
   return (
     <PageLayout>
       <EditorHeader
-        campaign={editor?.campaign}
+        campaign={campaign}
         hasDraft={hasDraft}
         busy={busy}
         onRefresh={refresh}
-        onStateChange={setCampaignEnabled}
         onDiscard={discard}
         onPublish={requestPublish}
       />
@@ -38,14 +38,24 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
           Проверьте текущие настройки перед публикацией черновика.
         </Alert>
       )}
+      {(campaign?.state === 'active' || campaign?.state === 'disabled') && (
+        <Switch
+          label="Кампания включена"
+          checked={campaign.state === 'active'}
+          disabled={busy}
+          onChange={(event) => setCampaignEnabled(event.currentTarget.checked)}
+        />
+      )}
       {editor?.streams.length === 0 && <Text className={styles.muted}>У кампании нет потоков.</Text>}
       {editor?.streams.map((stream) => <StreamEditor key={stream.id} stream={stream} busy={busy} onEdit={update} />)}
       <ExternalChangeDialog
         opened={warningOpen}
+        publicationRequested={publicationRequested}
         busy={busy}
         error={error}
-        adminUrl={editor?.campaign.admin_url}
+        adminUrl={campaign?.admin_url}
         onClose={dismissWarning}
+        onDiscard={hasDraft ? discard : undefined}
         onConfirm={confirming && editor ? confirmPublish : undefined}
       />
     </PageLayout>

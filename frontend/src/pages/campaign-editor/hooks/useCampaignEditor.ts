@@ -137,7 +137,8 @@ export function useCampaignEditor(id: number) {
   const hasDraft = editor?.mode === 'draft';
   const changed = editor?.external_changed;
   const confirming = Boolean(changed && confirmationRevision === currentRevision);
-  const warningOpen = Boolean(confirmationRevision || (changed && dismissedRevision !== currentRevision));
+  const publicationRequested = confirmationRevision !== null;
+  const warningOpen = publicationRequested || Boolean(changed && dismissedRevision !== currentRevision);
 
   function refresh() {
     return run(() => readEditor(id));
@@ -164,7 +165,7 @@ export function useCampaignEditor(id: number) {
   }
 
   return {
-    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming,
+    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming, publicationRequested,
     update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   };
 }

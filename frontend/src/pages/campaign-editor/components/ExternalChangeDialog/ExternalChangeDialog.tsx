@@ -1,13 +1,13 @@
 import { Button, Group, Stack, Text } from '@mantine/core';
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/csr/ArrowSquareOut';
 
 import { ActionDialog } from '../../../../shared/components/ActionDialog/ActionDialog';
-import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
 import styles from './ExternalChangeDialog.module.css';
 import type { ExternalChangeDialogProps } from './ExternalChangeDialog.types';
 
-export function ExternalChangeDialog({ opened, busy, error, adminUrl, onClose, onConfirm }: ExternalChangeDialogProps) {
-  const variant = useLightOrDefaultVariant();
-
+export function ExternalChangeDialog({
+  opened, publicationRequested, busy, error, adminUrl, onClose, onDiscard, onConfirm,
+}: ExternalChangeDialogProps) {
   return (
     <ActionDialog opened={opened} busy={busy} title="Кампания изменилась в Keitaro" onClose={onClose}>
       <Stack>
@@ -16,12 +16,29 @@ export function ExternalChangeDialog({ opened, busy, error, adminUrl, onClose, o
         </Text>
         {error && <Text size="sm" className={styles.error}>{error}</Text>}
         <Group className={styles.compact}>
-          <Button component="a" href={adminUrl} target="_blank" rel="noopener noreferrer" variant={variant}>
-            Открыть в Keitaro
-          </Button>
-          <Button variant="default" disabled={busy} onClick={onClose}>Продолжить редактирование</Button>
+          {adminUrl && (
+            <Button
+              component="a"
+              href={adminUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="subtle"
+              color="teal"
+              leftSection={<ArrowSquareOutIcon size={18} aria-hidden="true" />}
+            >
+              Открыть в Keitaro
+            </Button>
+          )}
+          {!publicationRequested && (
+            <Button variant="default" disabled={busy} onClick={onClose}>Продолжить редактирование</Button>
+          )}
+          {!publicationRequested && onDiscard && (
+            <Button variant="subtle" color="red" disabled={busy} onClick={onDiscard}>
+              Отменить редактирование
+            </Button>
+          )}
           {onConfirm && (
-            <Button color="orange" disabled={busy} onClick={onConfirm}>Подтвердить перезапись</Button>
+            <Button color="orange" disabled={busy} onClick={onConfirm} className={styles.selfRight}>Подтвердить перезапись</Button>
           )}
         </Group>
       </Stack>
