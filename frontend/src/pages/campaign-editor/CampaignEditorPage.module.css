@@ -1,7 +1,3 @@
-.compact {
-  gap: var(--mantine-spacing-xs);
-}
-
 .muted {
   color: var(--mantine-color-dimmed);
 }

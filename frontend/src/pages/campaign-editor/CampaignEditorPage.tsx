@@ -1,5 +1,6 @@
-import { Alert, Group, Loader, Switch, Text } from '@mantine/core';
+import { Alert, Switch, Text } from '@mantine/core';
 
+import { GlobalProgress } from '@/shared/components/GlobalProgress/GlobalProgress';
 import { PageLayout } from '@/shared/components/PageLayout/PageLayout';
 import styles from './CampaignEditorPage.module.css';
 import type { CampaignEditorPageProps } from './CampaignEditorPage.types';
@@ -17,6 +18,7 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
 
   return (
     <PageLayout>
+      <GlobalProgress active={busy} />
       <EditorHeader
         campaign={campaign}
         hasDraft={hasDraft}
@@ -25,11 +27,6 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
         onDiscard={discard}
         onPublish={requestPublish}
       />
-      {busy && (
-        <Group role="status" className={styles.compact}>
-          <Loader size="xs" /><Text size="sm">Выполняем запрос…</Text>
-        </Group>
-      )}
       {!editor && !busy && !error && <Text role="status">Загрузка кампании…</Text>}
       {error && <Alert color="red" role="alert">{error}</Alert>}
       {notice && <Alert color="teal" role="status">{notice}</Alert>}

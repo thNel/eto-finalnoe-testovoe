@@ -1,6 +1,7 @@
 import { ActionIcon, Button, Group, Table, Text } from '@mantine/core';
 import { PushPinIcon } from '@phosphor-icons/react/dist/csr/PushPin';
 import { PushPinSlashIcon } from '@phosphor-icons/react/dist/csr/PushPinSlash';
+import { TrashIcon } from '@phosphor-icons/react/dist/csr/Trash';
 import cn from "classnames";
 
 import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
@@ -71,15 +72,17 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
                     <PinIcon size={18} aria-hidden="true" />
                   </ActionIcon>
                 )}
-                <Button
+                <ActionIcon
                   variant="subtle"
                   color="red"
-                  size="sm"
+                  size="lg"
+                  aria-label="Удалить"
+                  title="Удалить"
                   disabled={busy}
                   onClick={() => void onEdit(offer.id, 'remove')}
                 >
-                  Удалить
-                </Button>
+                  <TrashIcon size={18} aria-hidden="true" />
+                </ActionIcon>
               </>
             )}
           </Group>

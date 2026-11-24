@@ -25,7 +25,7 @@ export function CampaignTable({ data, page, knownPageCount, onPageChange }: Camp
           <Text className={styles.muted}>Кампаний на этой странице пока нет.</Text>
         </Paper>
       ) : (
-        <Paper withBorder radius="md">
+        <Paper withBorder radius="md" className={styles.table}>
           <DataTable columns={columns} minWidth={440} highlightRows>
             {data.items.map((campaign) => (
               <Table.Tr
@@ -42,12 +42,16 @@ export function CampaignTable({ data, page, knownPageCount, onPageChange }: Camp
                   <Text size="xs" className={styles.muted}>#{campaign.id}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Badge variant="light" color={states[campaign.state]?.color ?? 'gray'}>
+                  <Badge
+                    variant="light"
+                    color={states[campaign.state]?.color ?? 'gray'}
+                    classNames={{ root: styles.statusBadge, label: styles.statusLabel }}
+                  >
                     {states[campaign.state]?.label ?? campaign.state}
                   </Badge>
                 </Table.Td>
                 <Table.Td>
-                  <Group className={styles.rowActions}>
+                  <Group className={styles.rowActions} wrap="nowrap">
                     <ActionIcon
                       component={Link}
                       to={`/campaigns/${campaign.id}`}

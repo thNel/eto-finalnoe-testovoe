@@ -2,12 +2,27 @@
   padding: var(--mantine-spacing-lg);
 }
 
+.table :is(th, td):nth-child(n + 2) {
+  width: 1%;
+  white-space: nowrap;
+}
+
 .campaignRow {
   cursor: pointer;
 }
 
 .campaignName {
   font-weight: 600;
+}
+
+.statusBadge {
+  inline-size: max-content;
+}
+
+.statusBadge,
+.statusLabel {
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .rowActions {
