@@ -11,7 +11,7 @@ export function useCampaignEditor(id: number) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [confirming, setConfirming] = useState(false);
+  const [confirmationRevision, setConfirmationRevision] = useState<string | null>(null);
   const [dismissedRevision, setDismissedRevision] = useState<string | null>(null);
   const [refreshRequest, setRefreshRequest] = useState<RefreshRequest | null>(null);
   const busyRef = useRef(false);
@@ -89,7 +89,7 @@ export function useCampaignEditor(id: number) {
     try {
       setEditor(await request());
       if (success) setNotice(success);
-      setConfirming(false);
+      setConfirmationRevision(null);
       return true;
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Операция не выполнена.');
@@ -97,11 +97,15 @@ export function useCampaignEditor(id: number) {
         const code = failure.detail.code;
         if (code === 'external_change') {
           setDismissedRevision(null);
-          setConfirming(true);
+          setConfirmationRevision(failure.detail.remote_revision ?? null);
         }
         if (code === 'external_change' || code === 'draft_version' || code === 'publication_failed') {
           try {
-            setEditor(await readEditor(id));
+            const latest = await readEditor(id);
+            setEditor(latest);
+            if (code === 'external_change' && latest.external_changed) {
+              setConfirmationRevision(latest.remote_revision);
+            }
           } catch {
             setError(`${failure.message} Обновите кампанию, чтобы получить актуальные данные.`);
           }
@@ -127,12 +131,13 @@ export function useCampaignEditor(id: number) {
 
   function dismissWarning() {
     setDismissedRevision(editor?.remote_revision ?? null);
-    setConfirming(false);
+    setConfirmationRevision(null);
   }
 
   const hasDraft = editor?.mode === 'draft';
   const changed = editor?.external_changed;
-  const warningOpen = Boolean(changed && (confirming || dismissedRevision !== editor?.remote_revision));
+  const confirming = Boolean(changed && confirmationRevision === currentRevision);
+  const warningOpen = Boolean(confirmationRevision || (changed && dismissedRevision !== currentRevision));
 
   function refresh() {
     return run(() => readEditor(id));
@@ -143,12 +148,12 @@ export function useCampaignEditor(id: number) {
   }
 
   function requestPublish() {
-    if (changed) setConfirming(true);
+    if (editor?.external_changed) setConfirmationRevision(editor.remote_revision);
     else publish();
   }
 
   function confirmPublish() {
-    if (editor) publish(editor.remote_revision);
+    if (confirming && confirmationRevision) publish(confirmationRevision);
   }
 
   return {

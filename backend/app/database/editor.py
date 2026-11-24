@@ -12,6 +12,7 @@ class EditorState(Base):
     draft: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), nullable=True)
     removed: Mapped[dict] = mapped_column(JSON, default=dict)
     pins: Mapped[dict] = mapped_column(JSON, default=dict)
+    published_offers: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), nullable=True)
 
 
 def load_state(campaign_id: int) -> EditorState:

@@ -8,8 +8,8 @@ import type { StreamOfferRowProps } from './StreamOfferRow.types';
 export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRowProps) {
   const noteClassName = cn({
     [styles.caption]: true,
-    [styles.warning]: offer.external_removal,
-    [styles.muted]: !offer.external_removal,
+    [styles.warning]: offer.external_removal || offer.removed_in_keitaro,
+    [styles.muted]: !offer.external_removal && !offer.removed_in_keitaro,
   });
   const removed = offer.state === 'removed';
   const active = offer.state === 'active';
@@ -21,6 +21,9 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
         <Text className={cn(styles.caption, styles.muted)}>#{offer.id}</Text>
         {offer.external_removal && (
           <Text className={noteClassName}>Добавлен в Keitaro, будет удалён при публикации</Text>
+        )}
+        {offer.removed_in_keitaro && (
+          <Text className={noteClassName}>Удалён в Keitaro, сохранён в черновике</Text>
         )}
         {removed && !offer.external_removal && <Text className={noteClassName}>Удалён из потока</Text>}
         {offer.state === 'disabled' && <Text className={cn(styles.caption, styles.muted)}>Отключён</Text>}

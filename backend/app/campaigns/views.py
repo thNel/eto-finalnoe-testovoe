@@ -16,6 +16,7 @@ class OfferView(BaseModel):
     state: str
     pinned: bool = False
     external_removal: bool = False
+    removed_in_keitaro: bool = False
 
 
 class StreamView(BaseModel):
@@ -51,13 +52,14 @@ async def stream_views(
             offers.append(OfferView(
                 id=offer_id,
                 name=names.get(offer_id, f"Оффер #{offer_id}"),
-                published_share=published.share if published else None,
+                published_share=published.share if published else (0 if offer_id in removed else None),
                 share=offer.share if offer else 0,
                 state=offer.state if offer else "removed",
                 pinned=offer.pinned if offer else False,
                 external_removal=bool(
                     changes and offer is None and published and offer_id not in changes.base_offer_ids
                 ),
+                removed_in_keitaro=offer is not None and published is None and offer_id in removed,
             ))
         views.append(StreamView(
             id=stream.id, name=stream.name or f"Поток #{stream.id}", state=stream.state,

@@ -7,6 +7,7 @@ export interface EditorOffer extends Offer {
   state: string;
   pinned: boolean;
   external_removal: boolean;
+  removed_in_keitaro: boolean;
 }
 
 export interface EditorStream {

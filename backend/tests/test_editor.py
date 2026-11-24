@@ -152,6 +152,48 @@ class EditorTest(unittest.IsolatedAsyncioTestCase):
         row = next(item for item in result["streams"][0]["offers"] if item["id"] == 3)
         self.assertEqual((row["state"], row["share"]), ("removed", 0))
 
+    async def test_records_external_removal_and_restores_only_into_draft(self):
+        await self.read()
+        self.tracker.streams[10]["offers"] = []
+        refreshed = await self.read()
+        row = refreshed["streams"][0]["offers"][0]
+        self.assertEqual((row["id"], row["state"], row["published_share"], row["share"]), (1, "removed", 0, 0))
+        self.assertEqual((await self.read())["streams"][0]["offers"], [row])
+        restored = (await self.edit(refreshed["version"], "restore", 1)).raise_for_status().json()
+        self.assertEqual(restored["streams"][0]["offers"][0]["share"], 100)
+        self.assertEqual(self.tracker.writes, [])
+
+    async def test_external_removal_preserves_existing_draft(self):
+        saved = (await self.edit(0, "add", 2)).raise_for_status().json()
+        self.tracker.streams[10]["offers"] = []
+        refreshed = await self.read()
+        row = refreshed["streams"][0]["offers"][0]
+        self.assertTrue(refreshed["external_changed"])
+        self.assertEqual(refreshed["version"], saved["version"])
+        self.assertTrue(row["removed_in_keitaro"])
+        self.assertEqual((row["published_share"], row["share"]), (0, 50))
+        self.assertEqual((await self.publish(saved["version"])).status_code, 409)
+        self.assertEqual(self.tracker.writes, [])
+
+    async def test_rejects_external_change_between_publication_reads(self):
+        saved = (await self.edit(0, "add", 2)).raise_for_status().json()
+        original = self.client.list_streams
+        reads = 0
+
+        async def list_streams(campaign_id):
+            nonlocal reads
+            reads += 1
+            if reads == 2:
+                self.tracker.streams[10]["offers"] = []
+            return await original(campaign_id)
+
+        with patch.object(self.client, "list_streams", side_effect=list_streams):
+            rejected = await self.publish(saved["version"])
+
+        self.assertEqual(rejected.status_code, 409)
+        self.assertEqual(rejected.json()["detail"]["code"], "external_change")
+        self.assertEqual(self.tracker.writes, [])
+
     async def test_partial_publish_keeps_the_remaining_draft_and_skips_completed_stream(self):
         first = (await self.edit(0, "remove", 1)).raise_for_status().json()
         second = (await self.edit(first["version"], "remove", 1, stream_id=20)).raise_for_status().json()

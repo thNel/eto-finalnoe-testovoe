@@ -1,6 +1,7 @@
 from app.campaigns.drafts import DraftStream, get_draft, store_draft
 from app.campaigns.errors import EditorError
-from app.campaigns.snapshot import Snapshot, editable, offer_signature
+from app.campaigns.history import record_published_offers
+from app.campaigns.snapshot import Snapshot, editable, offer_signature, read_snapshot
 from app.database.editor import EditorState
 from app.keitaro.client import KeitaroClient, KeitaroError
 from app.keitaro.schemas import Stream
@@ -54,13 +55,16 @@ async def publish(
         stream = snapshot.streams.get(stream_id)
         if stream is None or not editable(stream):
             raise EditorError(409, "stream_uneditable", "Изменённый поток удалён или больше не принимает офферы.")
-    if revision != draft.base_revision and confirm_revision != revision:
-        raise EditorError(
-            409, "external_change", "Кампания изменилась в Keitaro.",
-            remote_revision=revision,
-        )
+    expected_revision = confirm_revision if confirm_revision is not None else draft.base_revision
+    if revision != expected_revision:
+        raise _external_change(revision)
 
     for stream_id, changes in list(draft.streams.items()):
+        latest = await read_snapshot(client, snapshot.campaign.id)
+        latest_revision = latest.revision()
+        if latest_revision != revision:
+            record_published_offers(state, latest)
+            raise _external_change(latest_revision)
         stream = snapshot.streams[stream_id]
         current_ids = {offer.offer_id for offer in stream.offers}
         desired_ids = {offer.offer_id for offer in changes.offers}
@@ -74,8 +78,13 @@ async def publish(
         _record_publication(state, stream_id, changes)
         snapshot.streams[stream_id] = updated
         del draft.streams[stream_id]
-        draft.base_revision = snapshot.revision()
+        revision = snapshot.revision()
+        draft.base_revision = revision
         store_draft(state, draft)
+
+
+def _external_change(revision: str) -> EditorError:
+    return EditorError(409, "external_change", "Кампания изменилась в Keitaro.", remote_revision=revision)
 
 
 def discard(state: EditorState, snapshot: Snapshot) -> None:

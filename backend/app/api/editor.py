@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, NonNegativeInt
 from app.api.dependencies import Keitaro
 from app.api.schemas import CampaignSummary, summary
 from app.campaigns.drafts import OfferEdit, apply_edit, get_draft, require_version
+from app.campaigns.history import record_published_offers
 from app.campaigns.publication import discard, publish
 from app.campaigns.snapshot import Snapshot, editor_lock, read_snapshot
 from app.campaigns.views import StreamView, stream_views
@@ -32,6 +33,7 @@ class CampaignEditor(BaseModel):
 
 
 async def _view(client: KeitaroClient, state: EditorState, snapshot: Snapshot) -> CampaignEditor:
+    record_published_offers(state, snapshot)
     draft = get_draft(state)
     revision = snapshot.revision()
     return CampaignEditor(
@@ -57,6 +59,7 @@ async def edit_draft(campaign_id: CampaignId, data: OfferEdit, client: Keitaro) 
         state = load_state(campaign_id)
         require_version(state, data.version)
         snapshot = await read_snapshot(client, campaign_id)
+        record_published_offers(state, snapshot)
         await apply_edit(client, state, snapshot, data)
         return await _view(client, state, snapshot)
 
@@ -69,6 +72,7 @@ async def discard_draft(
         state = load_state(campaign_id)
         require_version(state, version)
         snapshot = await read_snapshot(client, campaign_id)
+        record_published_offers(state, snapshot)
         discard(state, snapshot)
         return await _view(client, state, snapshot)
 
@@ -79,5 +83,6 @@ async def publish_draft(campaign_id: CampaignId, data: PublishRequest, client: K
         state = load_state(campaign_id)
         require_version(state, data.version)
         snapshot = await read_snapshot(client, campaign_id)
+        record_published_offers(state, snapshot)
         await publish(client, state, snapshot, data.confirm_revision)
         return await _view(client, state, snapshot)
