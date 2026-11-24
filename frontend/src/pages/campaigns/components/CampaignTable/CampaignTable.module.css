@@ -2,6 +2,10 @@
   padding: var(--mantine-spacing-lg);
 }
 
+.campaignRow {
+  cursor: pointer;
+}
+
 .campaignName {
   font-weight: 600;
 }

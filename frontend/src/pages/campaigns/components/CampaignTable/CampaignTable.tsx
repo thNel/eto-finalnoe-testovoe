@@ -1,8 +1,9 @@
-import { Anchor, Badge, Group, Pagination, Paper, Table, Text } from '@mantine/core';
-import { Link } from 'react-router';
+import { ActionIcon, Badge, Group, Pagination, Paper, Table, Text } from '@mantine/core';
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/csr/ArrowSquareOut';
+import { PencilSimpleIcon } from '@phosphor-icons/react/dist/csr/PencilSimple';
+import { Link, useNavigate } from 'react-router';
 
 import { DataTable } from '../../../../shared/components/DataTable/DataTable';
-import { ExternalLink } from '../../../../shared/components/ExternalLink/ExternalLink';
 import styles from './CampaignTable.module.css';
 import type { CampaignTableProps } from './CampaignTable.types';
 
@@ -15,6 +16,8 @@ const states: Record<string, { label: string; color: string }> = {
 };
 
 export function CampaignTable({ data, page, knownPageCount, onPageChange }: CampaignTableProps) {
+  const navigate = useNavigate();
+
   return (
     <>
       {data.items.length === 0 ? (
@@ -25,7 +28,15 @@ export function CampaignTable({ data, page, knownPageCount, onPageChange }: Camp
         <Paper withBorder radius="md">
           <DataTable columns={columns} minWidth={440} highlightRows>
             {data.items.map((campaign) => (
-              <Table.Tr key={campaign.id}>
+              <Table.Tr
+                key={campaign.id}
+                className={styles.campaignRow}
+                onDoubleClick={(event) => {
+                  if (event.target instanceof Element && !event.target.closest('a, button')) {
+                    navigate(`/campaigns/${campaign.id}`);
+                  }
+                }}
+              >
                 <Table.Td>
                   <Text size="sm" className={styles.campaignName}>{campaign.name}</Text>
                   <Text size="xs" className={styles.muted}>#{campaign.id}</Text>
@@ -37,8 +48,28 @@ export function CampaignTable({ data, page, knownPageCount, onPageChange }: Camp
                 </Table.Td>
                 <Table.Td>
                   <Group className={styles.rowActions}>
-                    <Anchor component={Link} to={`/campaigns/${campaign.id}`} size="sm">Редактировать</Anchor>
-                    <ExternalLink href={campaign.admin_url} compact>Открыть в Keitaro</ExternalLink>
+                    <ActionIcon
+                      component={Link}
+                      to={`/campaigns/${campaign.id}`}
+                      variant="subtle"
+                      size="lg"
+                      aria-label="Редактировать"
+                      title="Редактировать"
+                    >
+                      <PencilSimpleIcon size={18} aria-hidden="true" />
+                    </ActionIcon>
+                    <ActionIcon
+                      component="a"
+                      href={campaign.admin_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="subtle"
+                      size="lg"
+                      aria-label="Открыть в Keitaro"
+                      title="Открыть в Keitaro"
+                    >
+                      <ArrowSquareOutIcon size={18} aria-hidden="true" />
+                    </ActionIcon>
                   </Group>
                 </Table.Td>
               </Table.Tr>
