@@ -13,7 +13,7 @@ import type { StreamEditorProps } from './StreamEditor.types';
 export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   const [adding, setAdding] = useState(false);
   const variant = useLightOrDefaultVariant();
-  const columns = ['Оффер', 'В Keitaro', stream.edited ? 'В черновике' : 'Доля, %', 'Действия'];
+  const columns = ['Оффер', 'В Keitaro', 'Доля, %', 'Действия'];
 
   function edit(offerId: number, operation: OfferEdit['operation'], share?: number) {
     return onEdit({ stream_id: stream.id, offer_id: offerId, operation, share });
