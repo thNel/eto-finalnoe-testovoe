@@ -1,4 +1,4 @@
-import {Alert, Button, Group, Loader, Text, Title} from '@mantine/core';
+import {Alert, Button, Flex, Group, Loader, Text, Title} from '@mantine/core';
 import {useState} from 'react';
 
 import type {CreatedCampaign} from '@/shared/api/campaigns/campaigns.dto';
@@ -43,7 +43,10 @@ export function CampaignsPage() {
       </Group>
       {created && <CreationNotice campaign={created}/>}
       {list.status === 'loading' && (
-        <Group role="status"><Loader size="sm"/><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
+        <Flex align="center" justify="center" direction="column" gap="md" className={styles.loader}>
+          <Loader size="lg"/>
+          <Text role="status">Загрузка кампаний…</Text>
+        </Flex>
       )}
       {list.status === 'error' && (
         <Alert color="red" title="Не удалось загрузить кампании" role="alert">

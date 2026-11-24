@@ -1,3 +1,7 @@
 .muted {
   color: var(--mantine-color-dimmed);
 }
+
+.loader {
+  flex: 1;
+}

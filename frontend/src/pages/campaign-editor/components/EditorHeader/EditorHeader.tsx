@@ -1,4 +1,4 @@
-import {ActionIcon, Badge, Box, Button, Group, Stack, Title} from '@mantine/core';
+import {ActionIcon, Badge, Box, Button, Group, Skeleton, Stack, Title} from '@mantine/core';
 import {ArrowLeftIcon} from '@phosphor-icons/react/dist/csr/ArrowLeft';
 import {Link} from 'react-router';
 
@@ -27,9 +27,12 @@ export function EditorHeader({campaign, hasDraft, busy, onRefresh, onDiscard, on
             >
               <ArrowLeftIcon size={18} aria-hidden="true"/>
             </ActionIcon>
-            <Title order={1}>
-              <BreakableText>{campaign?.name ?? 'Редактор кампании'}</BreakableText>
-            </Title>
+            {campaign
+              ? <Title order={1}>
+                <BreakableText>{campaign.name}</BreakableText>
+              </Title>
+              : <Skeleton w={240} h={44}/>
+            }
             {hasDraft && <Badge color="yellow">Черновик</Badge>}
           </Group>
           {hasDraft && (
