@@ -1,4 +1,4 @@
-import { Anchor, Badge, Button, Group, Paper, Table, Text } from '@mantine/core';
+import { Anchor, Badge, Group, Pagination, Paper, Table, Text } from '@mantine/core';
 import { Link } from 'react-router';
 
 import { DataTable } from '../../../../shared/components/DataTable/DataTable';
@@ -14,7 +14,7 @@ const states: Record<string, { label: string; color: string }> = {
   deleted: { label: 'В архиве', color: 'gray' },
 };
 
-export function CampaignTable({ data, page, onPageChange }: CampaignTableProps) {
+export function CampaignTable({ data, page, knownPageCount, onPageChange }: CampaignTableProps) {
   return (
     <>
       {data.items.length === 0 ? (
@@ -46,11 +46,21 @@ export function CampaignTable({ data, page, onPageChange }: CampaignTableProps) 
           </DataTable>
         </Paper>
       )}
-      <Group className={styles.pagination}>
-        <Button variant="default" disabled={page === 0} onClick={() => onPageChange(page - 1)}>Назад</Button>
-        <Text size="sm" className={styles.muted}>Страница {page + 1}</Text>
-        <Button variant="default" disabled={!data.has_more} onClick={() => onPageChange(page + 1)}>Далее</Button>
-      </Group>
+      <Pagination
+        component="nav"
+        aria-label="Страницы кампаний"
+        className={styles.pagination}
+        total={knownPageCount}
+        value={page + 1}
+        onChange={(nextPage) => onPageChange(nextPage - 1)}
+        layout="responsive"
+        hideWithOnePage
+        formatLabel={({ page: current }) => `Страница ${current}`}
+        getItemProps={(number) => ({ 'aria-label': `Страница ${number}` })}
+        getControlProps={(control) => ({
+          'aria-label': control === 'previous' ? 'Предыдущая страница' : 'Следующая страница',
+        })}
+      />
     </>
   );
 }

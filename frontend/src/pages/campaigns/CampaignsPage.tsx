@@ -10,7 +10,7 @@ import { CreationNotice } from './components/CreationNotice/CreationNotice';
 import { useCampaignList } from './hooks/useCampaignList';
 
 export function CampaignsPage() {
-  const { list, page, loadPage } = useCampaignList();
+  const { list, page, knownPageCount, loadPage } = useCampaignList();
   const [formOpen, setFormOpen] = useState(false);
   const [created, setCreated] = useState<CreatedCampaign | null>(null);
 
@@ -38,7 +38,9 @@ export function CampaignsPage() {
           </Group>
         </Alert>
       )}
-      {list.status === 'ready' && <CampaignTable data={list.data} page={page} onPageChange={loadPage} />}
+      {list.status === 'ready' && (
+        <CampaignTable data={list.data} page={page} knownPageCount={knownPageCount} onPageChange={loadPage} />
+      )}
       {formOpen && <CampaignForm onClose={() => setFormOpen(false)} onCreated={showCreated} />}
     </PageLayout>
   );
