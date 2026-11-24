@@ -8,7 +8,7 @@ import { AppRouter } from './AppRouter';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="auto">
       <AppRouter />
     </MantineProvider>
   </StrictMode>,

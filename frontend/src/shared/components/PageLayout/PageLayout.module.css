@@ -1,8 +1,13 @@
 .root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+  min-block-size: 100dvh;
   padding-block: var(--mantine-spacing-lg);
 }
 
 .content {
+  flex: 1;
   gap: var(--mantine-spacing-lg);
 }
 
