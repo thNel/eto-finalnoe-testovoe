@@ -22,6 +22,7 @@ class Tracker:
     catalog = [{"id": number, "name": f"Offer {number}", "state": "active"} for number in range(1, 7)]
 
     def __init__(self):
+        self.campaign = self.campaign.copy()
         self.streams = {
             number: {
                 "id": number, "name": f"Flow {number}", "campaign_id": 123, "type": "regular",
@@ -35,6 +36,10 @@ class Tracker:
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         path = request.url.path
+        if request.method == "POST" and path in ("/campaigns/123/enable", "/campaigns/123/disable"):
+            self.campaign["state"] = "active" if path.endswith("/enable") else "disabled"
+            return httpx.Response(200, json=self.campaign)
+
         if request.method == "PUT":
             stream_id = int(path.split("/")[-1])
             self.writes.append(stream_id)
@@ -113,6 +118,28 @@ class EditorTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(editor["streams"])
         self.assertTrue(all(stream["clicks_today"] is None for stream in editor["streams"]))
         self.assertEqual(self.tracker.reports_requested, 0)
+
+    async def test_toggles_campaign_without_publishing_or_invalidating_its_draft(self):
+        saved = (await self.edit(0, "add", 2)).raise_for_status().json()
+        response = await self.http.patch(self.url + "/state", json={"state": "active"})
+        enabled = response.raise_for_status().json()
+        self.assertEqual(enabled["campaign"]["state"], "active")
+        self.assertEqual(enabled["mode"], "draft")
+        self.assertEqual(enabled["streams"], saved["streams"])
+        self.assertFalse(enabled["external_changed"])
+        disabled = (await self.http.patch(self.url + "/state", json={"state": "disabled"})).raise_for_status().json()
+        self.assertEqual(disabled["campaign"]["state"], "disabled")
+        self.assertFalse(disabled["external_changed"])
+        self.assertEqual(self.tracker.writes, [])
+
+    async def test_toggling_campaign_preserves_warning_about_an_external_change(self):
+        await self.edit(0, "add", 2)
+        self.tracker.streams[10]["offers"] = [offer(3, 100)]
+        enabled = (await self.http.patch(self.url + "/state", json={"state": "active"})).raise_for_status().json()
+        self.assertEqual(enabled["campaign"]["state"], "active")
+        self.assertTrue(enabled["external_changed"])
+        self.assertEqual((await self.publish(enabled["version"])).status_code, 409)
+        self.assertEqual(self.tracker.writes, [])
 
     async def test_removes_last_offer_and_can_restore_from_published_history(self):
         saved = (await self.edit(0, "remove", 1)).raise_for_status().json()

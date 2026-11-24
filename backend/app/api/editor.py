@@ -9,6 +9,7 @@ from app.campaigns.drafts import OfferEdit, apply_edit, get_draft, require_versi
 from app.campaigns.history import record_published_offers
 from app.campaigns.publication import discard, publish
 from app.campaigns.snapshot import Snapshot, editor_lock, read_snapshot
+from app.campaigns.status import CampaignStatus, update_campaign_status
 from app.campaigns.views import StreamView, stream_views
 from app.database.editor import EditorState, load_state
 from app.keitaro.client import KeitaroClient
@@ -21,6 +22,10 @@ CampaignId = Annotated[int, Path(gt=0)]
 class PublishRequest(BaseModel):
     version: NonNegativeInt
     confirm_revision: str | None = Field(default=None, min_length=64, max_length=64)
+
+class CampaignStatusRequest(BaseModel):
+    state: CampaignStatus
+
 
 
 class CampaignEditor(BaseModel):
@@ -51,6 +56,16 @@ async def read_campaign(campaign_id: CampaignId, client: Keitaro) -> CampaignEdi
     async with editor_lock(campaign_id):
         snapshot = await read_snapshot(client, campaign_id)
         return await _view(client, load_state(campaign_id), snapshot)
+
+
+@router.patch("/campaigns/{campaign_id}/state")
+async def change_campaign_state(campaign_id: CampaignId, data: CampaignStatusRequest, client: Keitaro) -> CampaignEditor:
+    async with editor_lock(campaign_id):
+        state = load_state(campaign_id)
+        snapshot = await read_snapshot(client, campaign_id)
+        record_published_offers(state, snapshot)
+        updated = await update_campaign_status(client, state, snapshot, data.state)
+        return await _view(client, state, updated)
 
 
 @router.patch("/campaigns/{campaign_id}/draft")

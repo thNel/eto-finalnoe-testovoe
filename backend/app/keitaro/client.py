@@ -110,3 +110,6 @@ class KeitaroClient:
 
     async def enable_campaign(self, campaign_id: int) -> Campaign:
         return await self._request("POST", f"campaigns/{campaign_id}/enable", Campaign)
+
+    async def disable_campaign(self, campaign_id: int) -> Campaign:
+        return await self._request("POST", f"campaigns/{campaign_id}/disable", Campaign)

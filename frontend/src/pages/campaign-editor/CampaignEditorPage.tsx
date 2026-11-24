@@ -11,7 +11,7 @@ import { useCampaignEditor } from './hooks/useCampaignEditor';
 export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   const {
     editor, busy, error, notice, hasDraft, changed, warningOpen, confirming,
-    update, refresh, discard, requestPublish, confirmPublish, dismissWarning,
+    update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   } = useCampaignEditor(id);
 
   return (
@@ -21,6 +21,7 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
         hasDraft={hasDraft}
         busy={busy}
         onRefresh={refresh}
+        onStateChange={setCampaignEnabled}
         onDiscard={discard}
         onPublish={requestPublish}
       />

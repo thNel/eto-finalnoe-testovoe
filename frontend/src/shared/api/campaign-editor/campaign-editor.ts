@@ -1,8 +1,18 @@
-import type { CampaignEditor, EditDraftRequest, OfferEdit, PublishDraftRequest } from './campaign-editor.dto';
+import type {
+  CampaignEditor, CampaignStatusRequest, EditDraftRequest, OfferEdit, PublishDraftRequest,
+} from './campaign-editor.dto';
 import { request } from '../http/http';
 
 export function readEditor(id: number, signal?: AbortSignal) {
   return request<CampaignEditor>(`/campaigns/${id}`, { signal });
+}
+
+export function changeCampaignStatus(id: number, body: CampaignStatusRequest) {
+  return request<CampaignEditor>(`/campaigns/${id}/state`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 }
 
 export function editDraft(id: number, version: number, edit: OfferEdit) {

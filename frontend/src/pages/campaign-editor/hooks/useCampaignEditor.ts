@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { discardDraft, editDraft, publishDraft, readEditor } from '../../../shared/api/campaign-editor/campaign-editor';
+import { changeCampaignStatus, discardDraft, editDraft, publishDraft, readEditor } from '../../../shared/api/campaign-editor/campaign-editor';
 import type { CampaignEditor, OfferEdit } from '../../../shared/api/campaign-editor/campaign-editor.dto';
 import { ApiError } from '../../../shared/api/http/http';
 import { useCampaignEvents } from '../../../shared/hooks/useCampaignEvents';
@@ -143,6 +143,13 @@ export function useCampaignEditor(id: number) {
     return run(() => readEditor(id));
   }
 
+  function setCampaignEnabled(enabled: boolean) {
+    void run(
+      () => changeCampaignStatus(id, { state: enabled ? 'active' : 'disabled' }),
+      enabled ? 'Кампания включена в Keitaro.' : 'Кампания отключена в Keitaro.',
+    );
+  }
+
   function discard() {
     if (editor) void run(() => discardDraft(id, editor.version), 'Черновик отменён.');
   }
@@ -158,6 +165,6 @@ export function useCampaignEditor(id: number) {
 
   return {
     editor, busy, error, notice, hasDraft, changed, warningOpen, confirming,
-    update, refresh, discard, requestPublish, confirmPublish, dismissWarning,
+    update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   };
 }

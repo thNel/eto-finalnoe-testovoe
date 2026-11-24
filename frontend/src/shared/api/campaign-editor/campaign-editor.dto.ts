@@ -44,3 +44,7 @@ export interface PublishDraftRequest {
   version: number;
   confirm_revision?: string;
 }
+
+export interface CampaignStatusRequest {
+  state: 'active' | 'disabled';
+}

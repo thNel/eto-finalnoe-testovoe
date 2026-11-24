@@ -5,6 +5,7 @@ export interface EditorHeaderProps {
   hasDraft: boolean;
   busy: boolean;
   onRefresh: () => void;
+  onStateChange: (enabled: boolean) => void;
   onDiscard: () => void;
   onPublish: () => void;
 }
