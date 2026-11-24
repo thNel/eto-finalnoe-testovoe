@@ -73,7 +73,7 @@ def initial_stream(state: EditorState, stream: Stream) -> DraftStream:
         offers=[
             DraftOffer(
                 **offer.model_dump(),
-                pinned=offer.state == "active" and pins.get(str(offer.offer_id)) == offer.share,
+                pinned=offer.state == "active" and str(offer.offer_id) in pins,
             )
             for offer in stream.offers
         ],
