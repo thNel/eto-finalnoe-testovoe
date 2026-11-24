@@ -35,6 +35,7 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
           checked={campaign.state === 'active'}
           disabled={busy}
           onChange={(event) => setCampaignEnabled(event.currentTarget.checked)}
+          color="teal"
         />
       )}
       {editor?.streams.length === 0 && <Text className={styles.muted}>У кампании нет потоков.</Text>}

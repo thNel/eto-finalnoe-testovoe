@@ -1,15 +1,16 @@
-import { ActionIcon, Button, Group, Table, Text } from '@mantine/core';
-import { PushPinIcon } from '@phosphor-icons/react/dist/csr/PushPin';
-import { PushPinSlashIcon } from '@phosphor-icons/react/dist/csr/PushPinSlash';
-import { TrashIcon } from '@phosphor-icons/react/dist/csr/Trash';
+import {ActionIcon, Button, Group, Table, Text} from '@mantine/core';
+import {PushPinIcon} from '@phosphor-icons/react/dist/csr/PushPin';
+import {PushPinSlashIcon} from '@phosphor-icons/react/dist/csr/PushPinSlash';
+import {TrashIcon} from '@phosphor-icons/react/dist/csr/Trash';
 import cn from "classnames";
 
-import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
-import { ShareInput } from '../ShareInput/ShareInput';
+import {useLightOrDefaultVariant} from '@/shared/hooks/useLightOrDefaultVariant';
+import {ShareInput} from '../ShareInput/ShareInput';
 import styles from './StreamOfferRow.module.css';
-import type { StreamOfferRowProps } from './StreamOfferRow.types';
+import type {StreamOfferRowProps} from './StreamOfferRow.types';
+import {ArrowBendUpLeftIcon} from "@phosphor-icons/react/dist/csr/ArrowBendUpLeft";
 
-export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRowProps) {
+export function StreamOfferRow({offer, editable, busy, onEdit}: StreamOfferRowProps) {
   const variant = useLightOrDefaultVariant();
   const noteClassName = cn({
     [styles.caption]: true,
@@ -37,14 +38,29 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
       </Table.Td>
       <Table.Td>{offer.published_share === null ? '—' : `${offer.published_share}%`}</Table.Td>
       <Table.Td>
-        {editable && active ? (
-          <ShareInput
-            key={offer.share}
-            offer={offer}
-            disabled={busy}
-            onSave={(share) => void onEdit(offer.id, 'pin', share)}
-          />
-        ) : `${offer.share}%`}
+        <Group>
+          {editable && active ? (
+            <ShareInput
+              key={offer.share}
+              offer={offer}
+              disabled={busy}
+              onSave={(share) => void onEdit(offer.id, 'pin', share)}
+            />
+          ) : `${offer.share}%`}
+          {active && (
+            <ActionIcon
+              variant={offer.pinned ? variant : 'subtle'}
+              color="orange"
+              size="lg"
+              aria-label={pinLabel}
+              title={pinLabel}
+              disabled={busy}
+              onClick={() => void onEdit(offer.id, offer.pinned ? 'unpin' : 'pin')}
+            >
+              <PinIcon size={18} aria-hidden="true"/>
+            </ActionIcon>
+          )}
+        </Group>
       </Table.Td>
       <Table.Td>
         {editable && (
@@ -55,23 +71,12 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
                 size="sm"
                 disabled={busy}
                 onClick={() => void onEdit(offer.id, 'restore')}
+                leftSection={<ArrowBendUpLeftIcon size={18}/>}
               >
                 {offer.external_removal ? 'Оставить в черновике' : 'Вернуть'}
               </Button>
             ) : (
               <>
-                {active && (
-                  <ActionIcon
-                    variant={offer.pinned ? variant : 'subtle'}
-                    size="lg"
-                    aria-label={pinLabel}
-                    title={pinLabel}
-                    disabled={busy}
-                    onClick={() => void onEdit(offer.id, offer.pinned ? 'unpin' : 'pin')}
-                  >
-                    <PinIcon size={18} aria-hidden="true" />
-                  </ActionIcon>
-                )}
                 <ActionIcon
                   variant="subtle"
                   color="red"
@@ -81,7 +86,7 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
                   disabled={busy}
                   onClick={() => void onEdit(offer.id, 'remove')}
                 >
-                  <TrashIcon size={18} aria-hidden="true" />
+                  <TrashIcon size={18} aria-hidden="true"/>
                 </ActionIcon>
               </>
             )}

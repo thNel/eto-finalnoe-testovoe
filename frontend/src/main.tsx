@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { Button, createTheme, MantineProvider, Notification, Title } from '@mantine/core';
+import {ActionIcon, Button, createTheme, MantineProvider, Notification, Title} from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -12,6 +12,7 @@ import styles from './theme.module.css';
 const theme = createTheme({
   components: {
     Button: Button.extend({ classNames: { root: styles.button } }),
+    ActionIcon: ActionIcon.extend({classNames: {root: styles.button}}),
     Notification: Notification.extend({
       classNames: {
         root: styles.notification,

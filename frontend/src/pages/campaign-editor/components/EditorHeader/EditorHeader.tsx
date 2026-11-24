@@ -35,7 +35,7 @@ export function EditorHeader({campaign, hasDraft, busy, onRefresh, onDiscard, on
           {hasDraft && (
             <Group className={styles.compact}>
               <Button variant={variant} color="#bb2124" disabled={busy} onClick={onDiscard}>Отменить изменения</Button>
-              <Button disabled={busy} onClick={onPublish}>Опубликовать</Button>
+              <Button variant={variant} disabled={busy} onClick={onPublish}>Опубликовать</Button>
             </Group>
           )}
         </Stack>
