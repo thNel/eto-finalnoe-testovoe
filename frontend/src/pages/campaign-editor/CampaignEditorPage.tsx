@@ -1,6 +1,6 @@
 import { Alert, Group, Loader, Switch, Text } from '@mantine/core';
 
-import { PageLayout } from '../../shared/components/PageLayout/PageLayout';
+import { PageLayout } from '@/shared/components/PageLayout/PageLayout';
 import styles from './CampaignEditorPage.module.css';
 import type { CampaignEditorPageProps } from './CampaignEditorPage.types';
 import { EditorHeader } from './components/EditorHeader/EditorHeader';

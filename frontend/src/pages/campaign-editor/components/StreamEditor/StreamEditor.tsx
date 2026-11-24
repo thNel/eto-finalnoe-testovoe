@@ -1,10 +1,10 @@
 import { Badge, Button, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
-import type { OfferEdit } from '../../../../shared/api/campaign-editor/campaign-editor.dto';
-import { BreakableText } from '../../../../shared/components/BreakableText/BreakableText';
-import { DataTable } from '../../../../shared/components/DataTable/DataTable';
-import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
+import type { OfferEdit } from '@/shared/api/campaign-editor/campaign-editor.dto';
+import { BreakableText } from '@/shared/components/BreakableText/BreakableText';
+import { DataTable } from '@/shared/components/DataTable/DataTable';
+import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
 import { StreamOfferPicker } from '../StreamOfferPicker/StreamOfferPicker';
 import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
 import styles from './StreamEditor.module.css';

@@ -3,7 +3,7 @@ import { PushPinIcon } from '@phosphor-icons/react/dist/csr/PushPin';
 import { PushPinSlashIcon } from '@phosphor-icons/react/dist/csr/PushPinSlash';
 import cn from "classnames";
 
-import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
+import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
 import { ShareInput } from '../ShareInput/ShareInput';
 import styles from './StreamOfferRow.module.css';
 import type { StreamOfferRowProps } from './StreamOfferRow.types';

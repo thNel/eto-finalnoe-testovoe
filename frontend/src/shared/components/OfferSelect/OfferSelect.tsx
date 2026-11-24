@@ -2,8 +2,8 @@ import { Button, Group, Loader, Select, Stack, Text } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 
-import { searchOffers } from '../../api/offers/offers';
-import type { Offer } from '../../api/offers/offers.dto';
+import { searchOffers } from '@/shared/api/offers/offers';
+import type { Offer } from '@/shared/api/offers/offers.dto';
 import styles from './OfferSelect.module.css';
 import type { OfferSelectProps } from './OfferSelect.types';
 

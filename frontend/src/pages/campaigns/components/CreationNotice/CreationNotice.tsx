@@ -1,7 +1,7 @@
 import { Alert, Anchor, Group } from '@mantine/core';
 import { Link } from 'react-router';
 
-import { ExternalLink } from '../../../../shared/components/ExternalLink/ExternalLink';
+import { ExternalLink } from '@/shared/components/ExternalLink/ExternalLink';
 import type { CreationNoticeProps } from './CreationNotice.types';
 
 export function CreationNotice({ campaign }: CreationNoticeProps) {

@@ -1,4 +1,4 @@
-import type { Offer } from '../../api/offers/offers.dto';
+import type { Offer } from '@/shared/api/offers/offers.dto';
 
 export interface OfferSelectProps {
   value: Offer | null;

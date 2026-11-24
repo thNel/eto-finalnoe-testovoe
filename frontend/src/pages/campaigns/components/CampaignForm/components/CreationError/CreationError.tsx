@@ -1,6 +1,6 @@
 import { Alert, Text } from '@mantine/core';
 
-import { ExternalLink } from '../../../../../../shared/components/ExternalLink/ExternalLink';
+import { ExternalLink } from '@/shared/components/ExternalLink/ExternalLink';
 import styles from './CreationError.module.css';
 import type { CreationErrorProps } from './CreationError.types';
 

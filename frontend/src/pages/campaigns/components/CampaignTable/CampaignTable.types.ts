@@ -1,4 +1,4 @@
-import type { CampaignPage } from '../../../../shared/api/campaigns/campaigns.dto';
+import type { CampaignPage } from '@/shared/api/campaigns/campaigns.dto';
 
 export interface CampaignTableProps {
   data: CampaignPage;

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { changeCampaignStatus, discardDraft, editDraft, publishDraft, readEditor } from '../../../shared/api/campaign-editor/campaign-editor';
-import type { CampaignEditor, OfferEdit } from '../../../shared/api/campaign-editor/campaign-editor.dto';
-import { ApiError } from '../../../shared/api/http/http';
-import { useCampaignEvents } from '../../../shared/hooks/useCampaignEvents';
+import { changeCampaignStatus, discardDraft, editDraft, publishDraft, readEditor } from '@/shared/api/campaign-editor/campaign-editor';
+import type { CampaignEditor, OfferEdit } from '@/shared/api/campaign-editor/campaign-editor.dto';
+import { ApiError } from '@/shared/api/http/http';
+import { useCampaignEvents } from '@/shared/hooks/useCampaignEvents';
 import type { RefreshRequest } from './useCampaignEditor.types';
 
 export function useCampaignEditor(id: number) {

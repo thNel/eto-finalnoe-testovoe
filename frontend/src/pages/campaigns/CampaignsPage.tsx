@@ -1,8 +1,8 @@
 import { Alert, Button, Group, Loader, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
-import type { CreatedCampaign } from '../../shared/api/campaigns/campaigns.dto';
-import { PageLayout } from '../../shared/components/PageLayout/PageLayout';
+import type { CreatedCampaign } from '@/shared/api/campaigns/campaigns.dto';
+import { PageLayout } from '@/shared/components/PageLayout/PageLayout';
 import styles from './CampaignsPage.module.css';
 import { CampaignForm } from './components/CampaignForm/CampaignForm';
 import { CampaignTable } from './components/CampaignTable/CampaignTable';

@@ -1,4 +1,4 @@
-import type { Campaign } from '../../../../shared/api/campaigns/campaigns.dto';
+import type { Campaign } from '@/shared/api/campaigns/campaigns.dto';
 
 export interface EditorHeaderProps {
   campaign?: Campaign;

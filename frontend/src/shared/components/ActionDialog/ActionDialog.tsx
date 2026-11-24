@@ -1,6 +1,6 @@
 import { Modal } from '@mantine/core';
 
-import { useVisualViewport } from '../../hooks/useVisualViewport';
+import { useVisualViewport } from '@/shared/hooks/useVisualViewport';
 import styles from './ActionDialog.module.css';
 import type { ActionDialogProps } from './ActionDialog.types';
 

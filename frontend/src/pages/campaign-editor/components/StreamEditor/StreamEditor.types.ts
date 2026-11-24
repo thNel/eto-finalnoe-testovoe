@@ -1,4 +1,4 @@
-import type { EditorStream, OfferEdit } from '../../../../shared/api/campaign-editor/campaign-editor.dto';
+import type { EditorStream, OfferEdit } from '@/shared/api/campaign-editor/campaign-editor.dto';
 
 export interface StreamEditorProps {
   stream: EditorStream;

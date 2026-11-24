@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 
-import { createCampaign } from '../../../../../shared/api/campaigns/campaigns';
-import { ApiError } from '../../../../../shared/api/http/http';
-import type { ApiErrorDetail } from '../../../../../shared/api/http/http.dto';
-import type { Offer } from '../../../../../shared/api/offers/offers.dto';
+import { createCampaign } from '@/shared/api/campaigns/campaigns';
+import { ApiError } from '@/shared/api/http/http';
+import type { ApiErrorDetail } from '@/shared/api/http/http.dto';
+import type { Offer } from '@/shared/api/offers/offers.dto';
 import type { CampaignFormProps } from '../CampaignForm.types';
 
 export function useCampaignForm(onCreated: CampaignFormProps['onCreated']) {

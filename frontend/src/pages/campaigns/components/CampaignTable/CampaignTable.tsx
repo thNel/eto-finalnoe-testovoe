@@ -3,7 +3,7 @@ import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/csr/ArrowSquareOu
 import { PencilSimpleIcon } from '@phosphor-icons/react/dist/csr/PencilSimple';
 import { Link, useNavigate } from 'react-router';
 
-import { DataTable } from '../../../../shared/components/DataTable/DataTable';
+import { DataTable } from '@/shared/components/DataTable/DataTable';
 import styles from './CampaignTable.module.css';
 import type { CampaignTableProps } from './CampaignTable.types';
 

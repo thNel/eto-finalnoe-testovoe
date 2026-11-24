@@ -1,8 +1,8 @@
 import { Box, Button, Group } from '@mantine/core';
 import { useState } from 'react';
 
-import type { Offer } from '../../../../shared/api/offers/offers.dto';
-import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
+import type { Offer } from '@/shared/api/offers/offers.dto';
+import { OfferSelect } from '@/shared/components/OfferSelect/OfferSelect';
 import styles from './StreamOfferPicker.module.css';
 import type { StreamOfferPickerProps } from './StreamOfferPicker.types';
 

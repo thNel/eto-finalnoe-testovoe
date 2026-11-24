@@ -1,7 +1,7 @@
 import { Button, Group, Stack, TextInput } from '@mantine/core';
 
-import { ActionDialog } from '../../../../shared/components/ActionDialog/ActionDialog';
-import { OfferSelect } from '../../../../shared/components/OfferSelect/OfferSelect';
+import { ActionDialog } from '@/shared/components/ActionDialog/ActionDialog';
+import { OfferSelect } from '@/shared/components/OfferSelect/OfferSelect';
 import styles from './CampaignForm.module.css';
 import type { CampaignFormProps } from './CampaignForm.types';
 import { CreationError } from './components/CreationError/CreationError';

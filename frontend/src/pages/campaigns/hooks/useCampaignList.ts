@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { listCampaigns } from '../../../shared/api/campaigns/campaigns';
-import { useCampaignEvents } from '../../../shared/hooks/useCampaignEvents';
+import { listCampaigns } from '@/shared/api/campaigns/campaigns';
+import { useCampaignEvents } from '@/shared/hooks/useCampaignEvents';
 import type { ListState } from './useCampaignList.types';
 
 const PAGE_SIZE = 25;
