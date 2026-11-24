@@ -1,15 +1,15 @@
 import { useEffect, useEffectEvent } from 'react';
 
-import type { CampaignRevisionEvent } from '../api/campaign-editor/campaign-events.dto';
+import type { CampaignListRevisionEvent, CampaignRevisionEvent } from '../api/campaigns/campaign-events.dto';
 
 export function useCampaignEvents(
-  campaignId: number,
+  path: string,
   onRevision: (revision: string | null, reconnected: boolean) => void,
 ) {
   const publishRevision = useEffectEvent(onRevision);
 
   useEffect(() => {
-    const url = new URL(`/api/v1/campaigns/${campaignId}/events`, window.location.href);
+    const url = new URL(`/api/v1${path}`, window.location.href);
     url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
 
     let socket: WebSocket | undefined;
@@ -29,11 +29,13 @@ export function useCampaignEvents(
       socket.onmessage = ({ data }) => {
         if (disposed || typeof data !== 'string') return;
         try {
-          const event: Partial<CampaignRevisionEvent> | null = JSON.parse(data);
-          if (
-            event?.type === 'campaign_revision' && event.campaign_id === campaignId
-            && (typeof event.remote_revision === 'string' || event.remote_revision === null)
-          ) {
+          const event: Partial<CampaignRevisionEvent | CampaignListRevisionEvent> | null = JSON.parse(data);
+          const valid = event?.type === 'campaign_revision'
+            ? path === `/campaigns/${event.campaign_id}/events`
+              && (typeof event.remote_revision === 'string' || event.remote_revision === null)
+            : event?.type === 'campaign_list_revision' && path.startsWith('/campaigns/events?')
+              && typeof event.remote_revision === 'string';
+          if (valid && event && event.remote_revision !== undefined) {
             publishRevision(event.remote_revision, reconnected);
             reconnected = false;
           }
@@ -54,5 +56,5 @@ export function useCampaignEvents(
       window.clearTimeout(retryTimer);
       socket?.close();
     };
-  }, [campaignId]);
+  }, [path]);
 }

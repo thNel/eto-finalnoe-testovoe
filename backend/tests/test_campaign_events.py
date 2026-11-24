@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, Mock, patch
 from app.campaigns.errors import EditorError
 from app.campaigns.events import CampaignEvents
 from app.keitaro.client import KeitaroError
+from app.keitaro.schemas import Campaign
 
 
 class CampaignEventsTest(unittest.IsolatedAsyncioTestCase):
@@ -72,3 +73,33 @@ class CampaignEventsTest(unittest.IsolatedAsyncioTestCase):
             async with self.events.subscribe(10) as queue:
                 self.assertIsNone((await self.message(queue))["remote_revision"])
         self.assertEqual(self.read.await_count, 2)
+
+    async def test_shares_list_page_watch_and_broadcasts_external_rename(self):
+        campaign = Campaign(id=10, name="Before", alias="test", type="position", state="active")
+        next_poll = asyncio.Event()
+        allow_poll = asyncio.Event()
+        polls = 0
+
+        async def list_campaigns(*, offset, limit):
+            nonlocal polls
+            self.assertEqual((offset, limit), (25, 26))
+            polls += 1
+            if polls > 1:
+                next_poll.set()
+                await allow_poll.wait()
+            return [campaign]
+
+        self.client.list_campaigns = AsyncMock(side_effect=list_campaigns)
+        self.events.interval = 0
+        key = (25, 25)
+        async with self.events.subscribe(key) as first, self.events.subscribe(key) as second:
+            initial = await self.message(first)
+            self.assertEqual(initial["type"], "campaign_list_revision")
+            self.assertEqual(await self.message(second), initial)
+            await asyncio.wait_for(next_poll.wait(), timeout=1)
+            campaign.name = "After"
+            allow_poll.set()
+            changed = await self.message(first)
+            self.assertNotEqual(changed["remote_revision"], initial["remote_revision"])
+            self.assertEqual(await self.message(second), changed)
+        self.assertEqual(self.events.watches, {})

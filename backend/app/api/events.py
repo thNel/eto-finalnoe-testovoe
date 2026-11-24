@@ -1,9 +1,9 @@
 import asyncio
 from typing import Annotated
 
-from fastapi import APIRouter, Path, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Path, Query, WebSocket, WebSocketDisconnect
 
-from app.campaigns.events import CampaignEvent, CampaignEvents
+from app.campaigns.events import CampaignEvent, CampaignEvents, WatchKey
 
 
 router = APIRouter()
@@ -19,8 +19,7 @@ async def _wait_for_disconnect(socket: WebSocket) -> None:
         pass
 
 
-@router.websocket("/campaigns/{campaign_id}/events")
-async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt=0)]) -> None:
+async def _watch(socket: WebSocket, key: WatchKey) -> None:
     origin = socket.headers.get("origin")
     host = socket.headers.get("host")
     if origin is not None and (not host or origin not in (f"http://{host}", f"https://{host}")):
@@ -29,7 +28,7 @@ async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt
 
     await socket.accept()
     events: CampaignEvents = socket.app.state.campaign_events
-    async with events.subscribe(campaign_id) as queue:
+    async with events.subscribe(key) as queue:
         tasks = [
             asyncio.create_task(_send_updates(socket, queue)),
             asyncio.create_task(_wait_for_disconnect(socket)),
@@ -44,3 +43,17 @@ async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt
             for task in tasks:
                 task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
+
+
+@router.websocket("/campaigns/{campaign_id}/events")
+async def campaign_events(socket: WebSocket, campaign_id: Annotated[int, Path(gt=0)]) -> None:
+    await _watch(socket, campaign_id)
+
+
+@router.websocket("/campaigns/events")
+async def campaign_list_events(
+    socket: WebSocket,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 25,
+) -> None:
+    await _watch(socket, (offset, limit))

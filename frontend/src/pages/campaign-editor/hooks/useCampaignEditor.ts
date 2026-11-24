@@ -30,7 +30,7 @@ export function useCampaignEditor(id: number) {
   }, [id]);
 
   useCampaignEvents(
-    id,
+    `/campaigns/${id}/events`,
     (revision, reconnected) => setRefreshRequest((pending) => ({
       revision,
       force: reconnected || (pending?.force ?? false),

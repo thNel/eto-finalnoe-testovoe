@@ -28,8 +28,12 @@ class Snapshot:
             config = stream.model_dump(exclude={"offers"})
             config["offers"] = offer_signature(stream.offers)
             streams.append(config)
-        data = json.dumps([self.campaign.model_dump(), streams], sort_keys=True)
-        return hashlib.sha256(data.encode()).hexdigest()
+        return configuration_revision([self.campaign.model_dump(), streams])
+
+
+def configuration_revision(value: object) -> str:
+    data = json.dumps(value, sort_keys=True)
+    return hashlib.sha256(data.encode()).hexdigest()
 
 
 async def read_snapshot(client: KeitaroClient, campaign_id: int) -> Snapshot:
