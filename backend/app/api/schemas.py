@@ -15,11 +15,12 @@ class CampaignPage(BaseModel):
 
 
 class CreatedCampaign(CampaignSummary):
-    tracking_url: str
+    tracking_url: str | None
 
 
 def campaign_admin_url(campaign_id: int) -> str:
-    return f"{str(settings.keitaro_base_url).rstrip('/')}/admin/#!/campaigns/{campaign_id}"
+    route = f"campaign/{campaign_id}/main" if settings.keitaro_is_emulator else f"campaigns/{campaign_id}"
+    return f"{str(settings.keitaro_base_url).rstrip('/')}/admin/#!/{route}"
 
 
 def summary(campaign: Campaign) -> CampaignSummary:

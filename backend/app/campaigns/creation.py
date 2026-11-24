@@ -105,6 +105,7 @@ def _verify_setup(
     geo_stream_id: int,
     offer_stream_id: int,
     data: CreateCampaign,
+    geo_stream_type: str,
 ) -> None:
     if (
         campaign.state != "disabled" or campaign.type != "position"
@@ -126,7 +127,7 @@ def _verify_setup(
         raise KeitaroError("Keitaro не подтвердил два активных потока в нужном порядке.")
 
     if (
-        geo_stream.type != "forced" or geo_stream.schema_type != "redirect"
+        geo_stream.type != geo_stream_type or geo_stream.schema_type != "redirect"
         or geo_stream.action_type != "http" or geo_stream.action_payload != GOOGLE_URL
         or len(geo_stream.filters) != 1 or geo_stream.filters[0].name != "country"
         or geo_stream.filters[0].mode != "accept"
@@ -170,10 +171,11 @@ async def create_campaign(
             raise KeitaroError("Keitaro не подтвердил, что кампания отключена.")
 
         stage = "geo_stream"
+        geo_stream_type = "regular" if settings.keitaro_is_emulator else "forced"
         geo_stream = await client.create_stream({
             "campaign_id": campaign_id,
             "name": "GEO → Google",
-            "type": "forced",
+            "type": geo_stream_type,
             "schema": "redirect",
             "action_type": "http",
             "action_payload": GOOGLE_URL,
@@ -200,7 +202,7 @@ async def create_campaign(
         campaign = await client.get_campaign(campaign_id)
         state = campaign.state
         streams = await client.list_streams(campaign_id)
-        _verify_setup(campaign, target, streams, geo_stream.id, offer_stream.id, data)
+        _verify_setup(campaign, target, streams, geo_stream.id, offer_stream.id, data, geo_stream_type)
 
         stage = "enable"
         state = "unknown"

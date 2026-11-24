@@ -54,6 +54,8 @@ async def post_campaign(data: CreateCampaign, client: Keitaro) -> CreatedCampaig
             detail["upstream_status"] = error.cause.upstream_status
         raise HTTPException(status_code=error.cause.status, detail=detail) from error
 
-    scheme = "https" if domain.is_ssl else "http"
-    tracking_url = f"{scheme}://{domain.name}/{quote(campaign.alias, safe='')}"
+    tracking_url = None
+    if not settings.keitaro_is_emulator:
+        scheme = "https" if domain.is_ssl else "http"
+        tracking_url = f"{scheme}://{domain.name}/{quote(campaign.alias, safe='')}"
     return CreatedCampaign(**summary(campaign).model_dump(), tracking_url=tracking_url)

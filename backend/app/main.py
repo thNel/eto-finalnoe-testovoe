@@ -25,7 +25,10 @@ async def lifespan(app: FastAPI):
         timeout=httpx.Timeout(15, connect=5),
         headers={"Accept": "application/json", "User-Agent": "KeitaroCampaignManager/0.1"},
     ) as http:
-        client = KeitaroClient(http, settings.keitaro_api_key.get_secret_value())
+        client = KeitaroClient(
+            http, settings.keitaro_api_key.get_secret_value(),
+            supports_reports=not settings.keitaro_is_emulator,
+        )
         events = CampaignEvents(client)
         app.state.keitaro = client
         app.state.campaign_events = events

@@ -31,6 +31,7 @@ class Tracker:
         }
         self.writes = []
         self.rejected_stream = None
+        self.reports_requested = 0
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         path = request.url.path
@@ -43,6 +44,7 @@ class Tracker:
             return httpx.Response(200, json=self.streams[stream_id])
 
         if path == "/report/build":
+            self.reports_requested += 1
             data = json.loads(request.content)
             assert data["range"] == {"interval": "today"}
             assert data["filters"][0]["expression"] == 123
@@ -75,8 +77,8 @@ class EditorTest(unittest.IsolatedAsyncioTestCase):
             base_url="https://tracker.example/", transport=httpx.MockTransport(self.tracker.handle),
         )
         self.addAsyncCleanup(upstream.aclose)
-        client = KeitaroClient(upstream, "test-key")
-        self.enterContext(patch.dict(app.dependency_overrides, {get_keitaro: lambda: client}))
+        self.client = KeitaroClient(upstream, "test-key")
+        self.enterContext(patch.dict(app.dependency_overrides, {get_keitaro: lambda: self.client}))
         self.http = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test")
         self.addAsyncCleanup(self.http.aclose)
 
@@ -104,6 +106,13 @@ class EditorTest(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(first_stream["offers"][-1]["published_share"])
         self.assertEqual((await self.edit(0, "remove", 1)).status_code, 409)
         self.assertEqual(self.tracker.writes, [])
+
+    async def test_skips_reports_when_tracker_does_not_support_them(self):
+        self.client.supports_reports = False
+        editor = await self.read()
+        self.assertTrue(editor["streams"])
+        self.assertTrue(all(stream["clicks_today"] is None for stream in editor["streams"]))
+        self.assertEqual(self.tracker.reports_requested, 0)
 
     async def test_removes_last_offer_and_can_restore_from_published_history(self):
         saved = (await self.edit(0, "remove", 1)).raise_for_status().json()

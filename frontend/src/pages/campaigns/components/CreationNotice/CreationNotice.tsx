@@ -9,7 +9,7 @@ export function CreationNotice({ campaign }: CreationNoticeProps) {
     <Alert color="teal" title={`Кампания «${campaign.name}» создана`} role="status">
       <Group>
         <Anchor component={Link} to={`/campaigns/${campaign.id}`}>Открыть редактор</Anchor>
-        <ExternalLink href={campaign.tracking_url}>Ссылка кампании</ExternalLink>
+        {campaign.tracking_url && <ExternalLink href={campaign.tracking_url}>Ссылка кампании</ExternalLink>}
         <ExternalLink href={campaign.admin_url}>Открыть в Keitaro</ExternalLink>
       </Group>
     </Alert>

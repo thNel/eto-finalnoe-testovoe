@@ -17,9 +17,10 @@ T = TypeVar("T")
 
 
 class KeitaroClient:
-    def __init__(self, http: httpx.AsyncClient, api_key: str):
+    def __init__(self, http: httpx.AsyncClient, api_key: str, *, supports_reports: bool = True):
         self.http = http
         self.api_key = api_key
+        self.supports_reports = supports_reports
 
     async def _request(
         self,
@@ -96,7 +97,9 @@ class KeitaroClient:
     async def update_stream_offers(self, stream_id: int, offers: list[dict]) -> Stream:
         return await self._request("PUT", f"streams/{stream_id}", Stream, payload={"offers": offers})
 
-    async def stream_clicks_today(self, campaign_id: int) -> dict[int, int]:
+    async def stream_clicks_today(self, campaign_id: int) -> dict[int, int] | None:
+        if not self.supports_reports:
+            return None
         report = await self._request("POST", "report/build", ClickReport, payload={
             "range": {"interval": "today"},
             "dimensions": ["stream_id"],

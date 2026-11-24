@@ -18,5 +18,9 @@ class Settings(BaseSettings):
     keitaro_campaign_group: str = "FORTESTS"
     keitaro_traffic_source: str = "FORTESTS"
 
+    @property
+    def keitaro_is_emulator(self) -> bool:
+        return self.keitaro_base_url.host == "keitaro-for-tests.etolegko.com"
+
 
 settings = Settings()

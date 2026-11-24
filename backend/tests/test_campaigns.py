@@ -99,6 +99,22 @@ class CreateCampaignTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.keitaro.streams[0]["filters"][0]["payload"], ["PL", "AU"])
         self.assertEqual(self.keitaro.streams[1]["offers"][0]["offer_id"], 77)
 
+    async def test_uses_emulator_stream_type_and_links(self):
+        config = Settings(
+            _env_file=None,
+            keitaro_base_url="https://keitaro-for-tests.etolegko.com",
+            keitaro_domain="tracker.example",
+        )
+        with patch("app.api.campaigns.settings", config), patch("app.api.schemas.settings", config):
+            response = await self.create()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(self.keitaro.streams[0]["type"], "regular")
+        self.assertEqual(self.keitaro.streams[0]["filters"][0]["payload"], ["PL", "AU"])
+        campaign = response.json()
+        self.assertEqual(campaign["admin_url"], "https://keitaro-for-tests.etolegko.com/admin/#!/campaign/123/main")
+        self.assertIsNone(campaign["tracking_url"])
+
     async def test_reports_disabled_campaign_when_offer_stream_fails(self):
         self.keitaro.reject_offer_stream = True
         response = await self.create()

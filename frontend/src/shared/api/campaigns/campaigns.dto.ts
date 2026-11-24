@@ -11,7 +11,7 @@ export interface CampaignPage {
 }
 
 export interface CreatedCampaign extends Campaign {
-  tracking_url: string;
+  tracking_url: string | null;
 }
 
 export interface CampaignInput {
