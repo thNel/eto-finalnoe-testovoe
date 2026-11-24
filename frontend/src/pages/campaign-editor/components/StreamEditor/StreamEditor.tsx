@@ -1,22 +1,23 @@
-import { Badge, Button, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import {Badge, Button, Group, Paper, Stack, Text, Title} from '@mantine/core';
+import {useState} from 'react';
 
-import type { OfferEdit } from '@/shared/api/campaign-editor/campaign-editor.dto';
-import { BreakableText } from '@/shared/components/BreakableText/BreakableText';
-import { DataTable } from '@/shared/components/DataTable/DataTable';
-import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
-import { StreamOfferPicker } from '../StreamOfferPicker/StreamOfferPicker';
-import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
+import type {OfferEdit} from '@/shared/api/campaign-editor/campaign-editor.dto';
+import {BreakableText} from '@/shared/components/BreakableText/BreakableText';
+import {DataTable} from '@/shared/components/DataTable/DataTable';
+import {useLightOrDefaultVariant} from '@/shared/hooks/useLightOrDefaultVariant';
+import {StreamOfferPicker} from '../StreamOfferPicker/StreamOfferPicker';
+import {StreamOfferRow} from '../StreamOfferRow/StreamOfferRow';
 import styles from './StreamEditor.module.css';
-import type { StreamEditorProps } from './StreamEditor.types';
+import type {StreamEditorProps} from './StreamEditor.types';
+import {PlusIcon} from "@phosphor-icons/react/Plus";
 
-export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
+export function StreamEditor({stream, busy, onEdit}: StreamEditorProps) {
   const [adding, setAdding] = useState(false);
   const variant = useLightOrDefaultVariant();
   const columns = ['Оффер', 'В Keitaro', 'Доля, %', 'Действия'];
 
   function edit(offerId: number, operation: OfferEdit['operation'], share?: number) {
-    return onEdit({ stream_id: stream.id, offer_id: offerId, operation, share });
+    return onEdit({stream_id: stream.id, offer_id: offerId, operation, share});
   }
 
   return (
@@ -34,7 +35,8 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
             <Text size="sm" className={styles.muted}>Клики сегодня: {stream.clicks_today ?? 'нет данных'}</Text>
           </Stack>
           {stream.editable && !adding && (
-            <Button variant={variant} size="sm" disabled={busy} onClick={() => setAdding(true)}>
+            <Button variant={variant} size="sm" disabled={busy} onClick={() => setAdding(true)}
+                    leftSection={<PlusIcon size={18} aria-hidden="true"/>}>
               Добавить оффер
             </Button>
           )}
@@ -52,7 +54,7 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
         ) : (
           <DataTable columns={columns} minWidth={600}>
             {stream.offers.map((offer) => (
-              <StreamOfferRow key={offer.id} offer={offer} editable={stream.editable} busy={busy} onEdit={edit} />
+              <StreamOfferRow key={offer.id} offer={offer} editable={stream.editable} busy={busy} onEdit={edit}/>
             ))}
           </DataTable>
         )}

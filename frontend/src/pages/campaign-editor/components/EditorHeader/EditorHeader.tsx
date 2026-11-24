@@ -4,9 +4,10 @@ import {Link} from 'react-router';
 
 import {BreakableText} from '@/shared/components/BreakableText/BreakableText';
 import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/csr/ArrowSquareOut';
-import { useLightOrDefaultVariant } from '@/shared/hooks/useLightOrDefaultVariant';
+import {useLightOrDefaultVariant} from '@/shared/hooks/useLightOrDefaultVariant';
 import styles from './EditorHeader.module.css';
 import type {EditorHeaderProps} from './EditorHeader.types';
+import {ArrowCounterClockwiseIcon} from "@phosphor-icons/react/ArrowCounterClockwise";
 
 export function EditorHeader({campaign, hasDraft, busy, onRefresh, onDiscard, onPublish}: EditorHeaderProps) {
   const variant = useLightOrDefaultVariant();
@@ -40,11 +41,14 @@ export function EditorHeader({campaign, hasDraft, busy, onRefresh, onDiscard, on
         </Stack>
       </Box>
       <Group className={styles.compact}>
-        <Button variant="default" disabled={busy} onClick={onRefresh}>Обновить</Button>
+        <Button variant="default" disabled={busy} onClick={onRefresh}
+                leftSection={<ArrowCounterClockwiseIcon size={18} aria-hidden="true"/>}>
+          Обновить
+        </Button>
         {campaign &&
           <Button component="a" href={campaign.admin_url} target="_blank" rel="noopener noreferrer" variant="subtle"
                   color="teal" leftSection={<ArrowSquareOutIcon size={18} aria-hidden="true"/>}>
-             Открыть в Keitaro
+            Открыть в Keitaro
           </Button>
         }
       </Group>

@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Group, Pagination, Paper, Table, Text } from '@mantine/core';
+import {ActionIcon, Badge, Button, Group, Pagination, Paper, Table, Text} from '@mantine/core';
 import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/csr/ArrowSquareOut';
 import { PencilSimpleIcon } from '@phosphor-icons/react/dist/csr/PencilSimple';
 import { Link, useNavigate } from 'react-router';
@@ -55,25 +55,17 @@ export function CampaignTable({ data, page, knownPageCount, onPageChange }: Camp
                     <ActionIcon
                       component={Link}
                       to={`/campaigns/${campaign.id}`}
-                      variant="subtle"
+                      variant="default"
                       size="lg"
                       aria-label="Редактировать"
                       title="Редактировать"
                     >
                       <PencilSimpleIcon size={18} aria-hidden="true" />
                     </ActionIcon>
-                    <ActionIcon
-                      component="a"
-                      href={campaign.admin_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      variant="subtle"
-                      size="lg"
-                      aria-label="Открыть в Keitaro"
-                      title="Открыть в Keitaro"
-                    >
-                      <ArrowSquareOutIcon size={18} aria-hidden="true" />
-                    </ActionIcon>
+                    <Button component="a" href={campaign.admin_url} target="_blank" rel="noopener noreferrer" variant="subtle"
+                            color="teal" leftSection={<ArrowSquareOutIcon size={18} aria-hidden="true"/>}>
+                      Открыть в Keitaro
+                    </Button>
                   </Group>
                 </Table.Td>
               </Table.Tr>

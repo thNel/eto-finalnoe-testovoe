@@ -1,16 +1,18 @@
-import { Alert, Button, Group, Loader, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import {Alert, Button, Group, Loader, Text, Title} from '@mantine/core';
+import {useState} from 'react';
 
-import type { CreatedCampaign } from '@/shared/api/campaigns/campaigns.dto';
-import { PageLayout } from '@/shared/components/PageLayout/PageLayout';
+import type {CreatedCampaign} from '@/shared/api/campaigns/campaigns.dto';
+import {PageLayout} from '@/shared/components/PageLayout/PageLayout';
 import styles from './CampaignsPage.module.css';
-import { CampaignForm } from './components/CampaignForm/CampaignForm';
-import { CampaignTable } from './components/CampaignTable/CampaignTable';
-import { CreationNotice } from './components/CreationNotice/CreationNotice';
-import { useCampaignList } from './hooks/useCampaignList';
+import {CampaignForm} from './components/CampaignForm/CampaignForm';
+import {CampaignTable} from './components/CampaignTable/CampaignTable';
+import {CreationNotice} from './components/CreationNotice/CreationNotice';
+import {useCampaignList} from './hooks/useCampaignList';
+import {ArrowCounterClockwiseIcon} from "@phosphor-icons/react/dist/csr/ArrowCounterClockwise";
+import {PlusIcon} from "@phosphor-icons/react/dist/csr/Plus";
 
 export function CampaignsPage() {
-  const { list, page, knownPageCount, loadPage } = useCampaignList();
+  const {list, page, knownPageCount, loadPage} = useCampaignList();
   const [formOpen, setFormOpen] = useState(false);
   const [created, setCreated] = useState<CreatedCampaign | null>(null);
 
@@ -20,20 +22,28 @@ export function CampaignsPage() {
     loadPage(0);
   }
 
+  function createNew() {
+    setCreated(null);
+    setFormOpen(true);
+  }
+
   return (
     <PageLayout>
       <Group className={styles.header}>
         <Title order={1}>Кампании Keitaro</Title>
         <Group gap="sm">
-          <Button variant="default" disabled={list.status === 'loading'} onClick={() => loadPage(page)}>
+          <Button variant="default" disabled={list.status === 'loading'} onClick={() => loadPage(page)}
+                  leftSection={<ArrowCounterClockwiseIcon size={18} aria-hidden="true"/>}>
             Обновить
           </Button>
-          <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
+          <Button onClick={createNew} leftSection={<PlusIcon size={18} aria-hidden="true"/>}>
+            Новая кампания
+          </Button>
         </Group>
       </Group>
-      {created && <CreationNotice campaign={created} />}
+      {created && <CreationNotice campaign={created}/>}
       {list.status === 'loading' && (
-        <Group role="status"><Loader size="sm" /><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
+        <Group role="status"><Loader size="sm"/><Text className={styles.muted}>Загрузка кампаний…</Text></Group>
       )}
       {list.status === 'error' && (
         <Alert color="red" title="Не удалось загрузить кампании" role="alert">
@@ -44,9 +54,9 @@ export function CampaignsPage() {
         </Alert>
       )}
       {list.status === 'ready' && (
-        <CampaignTable data={list.data} page={page} knownPageCount={knownPageCount} onPageChange={loadPage} />
+        <CampaignTable data={list.data} page={page} knownPageCount={knownPageCount} onPageChange={loadPage}/>
       )}
-      {formOpen && <CampaignForm onClose={() => setFormOpen(false)} onCreated={showCreated} />}
+      {formOpen && <CampaignForm onClose={() => setFormOpen(false)} onCreated={showCreated}/>}
     </PageLayout>
   );
 }
