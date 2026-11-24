@@ -2,7 +2,9 @@ import { Badge, Button, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 
 import type { OfferEdit } from '../../../../shared/api/campaign-editor/campaign-editor.dto';
+import { BreakableText } from '../../../../shared/components/BreakableText/BreakableText';
 import { DataTable } from '../../../../shared/components/DataTable/DataTable';
+import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
 import { StreamOfferPicker } from '../StreamOfferPicker/StreamOfferPicker';
 import { StreamOfferRow } from '../StreamOfferRow/StreamOfferRow';
 import styles from './StreamEditor.module.css';
@@ -10,6 +12,7 @@ import type { StreamEditorProps } from './StreamEditor.types';
 
 export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
   const [adding, setAdding] = useState(false);
+  const variant = useLightOrDefaultVariant();
   const columns = ['Оффер', 'В Keitaro', stream.edited ? 'В черновике' : 'Доля, %', 'Действия'];
 
   function edit(offerId: number, operation: OfferEdit['operation'], share?: number) {
@@ -22,14 +25,16 @@ export function StreamEditor({ stream, busy, onEdit }: StreamEditorProps) {
         <Group className={styles.header}>
           <Stack className={styles.heading}>
             <Group className={styles.title}>
-              <Title order={2} size="h4">{stream.name}</Title>
-              {stream.edited && <Badge variant="light" color="yellow">Изменён</Badge>}
-              {stream.state === 'disabled' && <Badge variant="light" color="gray">Отключён</Badge>}
+              <Title order={2} size="h4">
+                <BreakableText>{stream.name}</BreakableText>
+              </Title>
+              {stream.edited && <Badge variant={variant} color="yellow">Изменён</Badge>}
+              {stream.state === 'disabled' && <Badge variant={variant} color="gray">Отключён</Badge>}
             </Group>
             <Text size="sm" className={styles.muted}>Клики сегодня: {stream.clicks_today ?? 'нет данных'}</Text>
           </Stack>
           {stream.editable && !adding && (
-            <Button variant="light" size="compact-sm" disabled={busy} onClick={() => setAdding(true)}>
+            <Button variant={variant} size="sm" disabled={busy} onClick={() => setAdding(true)}>
               Добавить оффер
             </Button>
           )}

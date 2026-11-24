@@ -1,5 +1,4 @@
-import { Alert, Anchor, Group, Loader, Text } from '@mantine/core';
-import { Link } from 'react-router';
+import { Alert, Group, Loader, Text } from '@mantine/core';
 
 import { PageLayout } from '../../shared/components/PageLayout/PageLayout';
 import styles from './CampaignEditorPage.module.css';
@@ -17,7 +16,6 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
 
   return (
     <PageLayout>
-      <Anchor component={Link} to="/" size="sm">Все кампании</Anchor>
       <EditorHeader
         campaign={editor?.campaign}
         hasDraft={hasDraft}

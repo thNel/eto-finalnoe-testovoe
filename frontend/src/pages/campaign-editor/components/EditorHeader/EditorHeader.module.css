@@ -3,6 +3,15 @@
   justify-content: space-between;
 }
 
+.heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--mantine-spacing-sm);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
 .compact {
   gap: var(--mantine-spacing-xs);
 }

@@ -1,11 +1,13 @@
 import { Button, Group, Table, Text } from '@mantine/core';
 import cn from "classnames";
 
+import { useLightOrDefaultVariant } from '../../../../shared/hooks/useLightOrDefaultVariant';
 import { ShareInput } from '../ShareInput/ShareInput';
 import styles from './StreamOfferRow.module.css';
 import type { StreamOfferRowProps } from './StreamOfferRow.types';
 
 export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRowProps) {
+  const variant = useLightOrDefaultVariant();
   const noteClassName = cn({
     [styles.caption]: true,
     [styles.warning]: offer.external_removal || offer.removed_in_keitaro,
@@ -45,7 +47,7 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
             {removed ? (
               <Button
                 variant="subtle"
-                size="compact-sm"
+                size="sm"
                 disabled={busy}
                 onClick={() => void onEdit(offer.id, 'restore')}
               >
@@ -55,8 +57,8 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
               <>
                 {active && (
                   <Button
-                    variant={offer.pinned ? 'light' : 'subtle'}
-                    size="compact-sm"
+                    variant={offer.pinned ? variant : 'subtle'}
+                    size="sm"
                     disabled={busy}
                     onClick={() => void onEdit(offer.id, offer.pinned ? 'unpin' : 'pin')}
                   >
@@ -66,7 +68,7 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
                 <Button
                   variant="subtle"
                   color="red"
-                  size="compact-sm"
+                  size="sm"
                   disabled={busy}
                   onClick={() => void onEdit(offer.id, 'remove')}
                 >

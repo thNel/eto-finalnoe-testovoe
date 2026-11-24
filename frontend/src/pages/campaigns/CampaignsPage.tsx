@@ -24,7 +24,12 @@ export function CampaignsPage() {
     <PageLayout>
       <Group className={styles.header}>
         <Title order={1}>Кампании Keitaro</Title>
-        <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
+        <Group gap="sm">
+          <Button variant="default" disabled={list.status === 'loading'} onClick={() => loadPage(page)}>
+            Обновить
+          </Button>
+          <Button onClick={() => { setCreated(null); setFormOpen(true); }}>Новая кампания</Button>
+        </Group>
       </Group>
       {created && <CreationNotice campaign={created} />}
       {list.status === 'loading' && (
