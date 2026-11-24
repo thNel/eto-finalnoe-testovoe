@@ -18,8 +18,8 @@ export function StreamOfferRow({ offer, editable, busy, onEdit }: StreamOfferRow
   });
   const removed = offer.state === 'removed';
   const active = offer.state === 'active';
-  const pinLabel = offer.pinned ? 'Открепить' : 'Закрепить';
-  const PinIcon = offer.pinned ? PushPinSlashIcon : PushPinIcon;
+  const pinLabel = offer.pinned ? 'Закреплено' : 'Свободно';
+  const PinIcon = offer.pinned ? PushPinIcon : PushPinSlashIcon;
 
   return (
     <Table.Tr>
