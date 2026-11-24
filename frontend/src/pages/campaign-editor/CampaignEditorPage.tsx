@@ -11,7 +11,7 @@ import { useCampaignEditor } from './hooks/useCampaignEditor';
 
 export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
   const {
-    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming, publicationRequested,
+    editor, busy, error, hasDraft, warningOpen, confirming, publicationRequested,
     update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   } = useCampaignEditor(id);
   const campaign = editor?.campaign;
@@ -29,12 +29,6 @@ export function CampaignEditorPage({ id }: CampaignEditorPageProps) {
       />
       {!editor && !busy && !error && <Text role="status">Загрузка кампании…</Text>}
       {error && <Alert color="red" role="alert">{error}</Alert>}
-      {notice && <Alert color="teal" role="status">{notice}</Alert>}
-      {changed && (
-        <Alert color="orange" title="Кампания изменилась в Keitaro">
-          Проверьте текущие настройки перед публикацией черновика.
-        </Alert>
-      )}
       {(campaign?.state === 'active' || campaign?.state === 'disabled') && (
         <Switch
           label="Кампания включена"

@@ -7,3 +7,22 @@
 .button {
   --mantine-cursor-type: pointer;
 }
+
+.notification {
+  padding-inline-start: var(--mantine-spacing-sm);
+  background-color: var(--notification-color);
+  color: var(--mantine-color-white);
+}
+
+.notification::before {
+  content: none;
+}
+
+.notification .notificationText,
+.notification .notificationClose {
+  color: inherit;
+}
+
+.notification .notificationClose:is(:hover, :active) {
+  background-color: rgb(255 255 255 / 15%);
+}

@@ -1,3 +1,4 @@
+import { notifications } from '@mantine/notifications';
 import { useEffect, useRef, useState } from 'react';
 
 import { changeCampaignStatus, discardDraft, editDraft, publishDraft, readEditor } from '@/shared/api/campaign-editor/campaign-editor';
@@ -9,7 +10,6 @@ import type { RefreshRequest } from './useCampaignEditor.types';
 export function useCampaignEditor(id: number) {
   const [editor, setEditor] = useState<CampaignEditor | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmationRevision, setConfirmationRevision] = useState<string | null>(null);
   const [dismissedRevision, setDismissedRevision] = useState<string | null>(null);
@@ -85,10 +85,14 @@ export function useCampaignEditor(id: number) {
     operationGeneration.current += 1;
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
       setEditor(await request());
-      if (success) setNotice(success);
+      if (success) notifications.show({
+        message: success,
+        color: 'teal.9',
+        role: 'status',
+        closeButtonProps: { 'aria-label': 'Закрыть уведомление' },
+      });
       setConfirmationRevision(null);
       return true;
     } catch (failure) {
@@ -136,6 +140,18 @@ export function useCampaignEditor(id: number) {
 
   const hasDraft = editor?.mode === 'draft';
   const changed = editor?.external_changed;
+  useEffect(() => {
+    if (!changed || !currentRevision) return;
+
+    notifications.show({
+      id: `campaign-change-${id}-${currentRevision}`,
+      title: 'Кампания изменилась в Keitaro',
+      message: 'Проверьте текущие настройки перед публикацией черновика.',
+      color: '#a63d08',
+      closeButtonProps: { 'aria-label': 'Закрыть уведомление' },
+    });
+  }, [changed, currentRevision, id]);
+
   const confirming = Boolean(changed && confirmationRevision === currentRevision);
   const publicationRequested = confirmationRevision !== null;
   const warningOpen = publicationRequested || Boolean(changed && dismissedRevision !== currentRevision);
@@ -165,7 +181,7 @@ export function useCampaignEditor(id: number) {
   }
 
   return {
-    editor, busy, error, notice, hasDraft, changed, warningOpen, confirming, publicationRequested,
+    editor, busy, error, hasDraft, warningOpen, confirming, publicationRequested,
     update, refresh, setCampaignEnabled, discard, requestPublish, confirmPublish, dismissWarning,
   };
 }
